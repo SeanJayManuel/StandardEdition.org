@@ -142,7 +142,7 @@
     }
     function explain(sc) {
       if (sc.outlets === 0 && sc.hasPrimary) {
-        return sc.hasRecord ? "A government record; no news coverage yet." : "A government statement; no news coverage yet.";
+        return sc.hasRecord ? "A government record; no coverage found in our feeds." : "A government statement; no coverage found in our feeds.";
       }
       var spectrum = !sc.leans.length ? "no rated outlets"
         : sc.leans.length === 1 ? sc.leans[0]
@@ -174,7 +174,7 @@
       if (reason === "blindspot") return short.concat("You turned off one-sided stories.").join(" ");
       if (reason === "threshold") return short.join(" ");
       var item = "A government " + (sc.hasRecord ? "record" : "statement");
-      return (sc.outlets ? [item + " that didn't make the main list."].concat(short) : [item + " no outlet covered."])
+      return (sc.outlets ? [item + " that didn't make the main list."].concat(short) : [item + " with no coverage found in our feeds."])
         .concat("You turned those off.").join(" ");
     }
     function excluded(p) {
@@ -287,7 +287,7 @@
           : x.lane === "blindspot" ? (coverageGap(x.score, p).unread.length ? "Coverage unclear: " : "One side only: ") + s.headline
           : (x.score.hasRecord ? "Government record: " : "Government statement: ") + s.headline;
         out.push("<item><title>" + esc(title) + "</title>" +
-          "<link>" + esc(baseUrl + "/#story-" + s.id) + "</link>" +
+          "<link>" + esc(baseUrl + storyPath(D.edition, s.id)) + "</link>" +
           '<guid isPermaLink="false">standardedition-' + D.edition + "-" + s.id + "</guid>" +
           "<category>" + esc(D.topics[s.topic] || s.topic) + "</category>" +
           "<pubDate>" + pub + "</pubDate>" +
@@ -400,9 +400,32 @@
     }).sort(function (a, b) { return a.published_at < b.published_at ? 1 : a.published_at > b.published_at ? -1 : 0; });
   }
 
+
+  // Edition-specific evidence; an absent source is never inferred to be silent.
+  function coverageContext(index, story, currentSources) {
+    var snapshot = (index.editions || {})[story.date];
+    var sources = snapshot ? snapshot.sources : currentSources;
+    var known = !!(snapshot && snapshot.coverage_known);
+    var down = snapshot ? snapshot.feeds_down || [] : [];
+    var covered = story.articles.map(function (a) { return a.source_id; });
+    var rated = Object.keys(sources).filter(function (id) {
+      return sources[id].type !== "primary" && SPECTRUM.indexOf(sources[id].lean) >= 0;
+    });
+    return {
+      sources: sources, known: known,
+      not_observed: known ? rated.filter(function (id) { return covered.indexOf(id) < 0 && down.indexOf(id) < 0; }) : [],
+      unavailable: down.filter(function (id) { return sources[id]; }),
+      not_monitored: snapshot ? Object.keys(currentSources).filter(function (id) { return !sources[id]; }) : []
+    };
+  }
+  function storyPath(date, id) {
+    return "/editions/" + encodeURIComponent(date) + "/stories/" + encodeURIComponent(id) + "/";
+  }
+
   root.BoringCore = {
+    storyPath: storyPath,
     create: create, DEFAULTS: DEFAULTS, SETTINGS: SETTINGS, SPECTRUM: SPECTRUM,
     WEIGHT_PARTS: WEIGHT_PARTS, REASONS: REASONS,
-    research: { tokens: tokens, lookup: lookup, searchRecords: searchRecords, earlier: earlier }
+    research: { coverageContext: coverageContext, tokens: tokens, lookup: lookup, searchRecords: searchRecords, earlier: earlier }
   };
 })(typeof globalThis !== "undefined" ? globalThis : this);

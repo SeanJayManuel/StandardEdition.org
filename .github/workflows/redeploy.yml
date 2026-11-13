@@ -1,0 +1,49 @@
+name: Redeploy a saved edition
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "Nightly edition run ID containing the saved publication (within 90 days)"
+        required: true
+        type: string
+
+concurrency:
+  group: standard-edition-publication
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify artifact provenance
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          RUN_ID: ${{ inputs.run_id }}
+        run: |
+          [[ "$RUN_ID" =~ ^[0-9]+$ ]] || exit 1
+          gh api "repos/$REPOSITORY/actions/runs/$RUN_ID" > run.json
+          jq -e --arg repo "$REPOSITORY" '.head_branch == "main" and .head_repository.full_name == $repo and .path == ".github/workflows/nightly.yml" and (.event == "schedule" or .event == "workflow_dispatch")' run.json
+      - uses: actions/download-artifact@v4
+        with:
+          name: publication-${{ inputs.run_id }}
+          path: publication
+          run-id: ${{ inputs.run_id }}
+          github-token: ${{ github.token }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm ci
+        working-directory: publication
+      - name: Deploy without rerunning ingestion or writing
+        working-directory: publication
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npm exec --no -- wrangler pages deploy site --project-name standard-edition --branch main

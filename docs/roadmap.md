@@ -2,7 +2,7 @@
 
 The detailed plan behind the summary in the [README](../README.md). Each feature has a stable ID so it can be worked through one at a time: what it is, what already exists, what's missing, what it needs from a person, and how we'll know it's done.
 
-Status as of 2026-11-05.
+Original launch assessment: 2026-11-05. Contributor/tooling and grouping descriptions updated 2026-11-12; live launch milestones still require operational evidence.
 
 **Status:** ✅ built · 🟡 partly built · ⬜ not started
 **Size:** S (under a day) · M (a few days) · L (a week or more)
@@ -97,8 +97,8 @@ Goal: a real edition, published every day, that the maintainer would be happy fo
 
 ### L3. Tests on pull requests 🟡 S
 
-- **Exists:** `.github/workflows/tests.yml`, on Python 3.12 and Node 20, with read-only permissions and no secrets.
-- **Gaps:** it hasn't run yet, so the code still hasn't been tested on Node 20.
+- **Exists:** `.github/workflows/tests.yml`, on Python 3.12 and Node 22, with read-only permissions and no secrets.
+- **Gaps:** the updated locked-dependency checks still need a passing GitHub Actions run; local validation is not hosted CI evidence.
 - **Done when:** it has passed on a real pull request.
 
 ### L4. Verify every live source 🟡 S
@@ -140,7 +140,7 @@ Goal: a real edition, published every day, that the maintainer would be happy fo
 ### L9. Launch legal check 🟡 S
 
 - **Exists:** summaries only, with links out, and a rule against republishing full articles.
-- **Gaps:** each outlet's feed terms haven't been read. The README licenses docs under CC BY-SA 4.0, but the repo has no file saying so. The About page has a contact section with public issues, and shows a private address once `BN_CONTACT_EMAIL` is set, but the mailbox is on hold for now, so public issues are the only route.
+- **Gaps:** each outlet's feed terms haven't been read. The README and `LICENSES/` specify documentation licensing and third-party boundaries. The About page has a contact section with public issues, and shows a private address once `BN_CONTACT_EMAIL` is set, but the mailbox is on hold for now, so public issues are the only route.
 - **Needs a person:** review the terms, take legal advice if in doubt, and decide when to set up the mailbox.
 - **Done when:** each outlet's terms have been checked, and the site has a contact route.
 
@@ -423,9 +423,9 @@ Goal: journalists and researchers can use the data without asking.
 - **Gaps:** the index grows with every day, and all of it is downloaded to the page. Longer history needs a different approach. Word matching also misses paraphrased claims. The MCP function's first search on a fresh copy costs far more than the free plan's 10 ms CPU limit, because it parses and tokenizes the whole index, so it needs a smaller or pre-tokenized index.
 - **Done when:** a reader can search the whole archive at a sensible download size.
 
-### D4. Better grouping ⬜ M
+### D4. Better grouping 🟡 M
 
-- **Exists:** word-based grouping.
+- **Exists:** sentence embeddings with a shared-name check and average linkage, with a word-based fallback. `BN_EMBEDDING_SIMILARITY` and `BN_WORD_SIMILARITY` configure the two methods.
 - **Tested (2026-11-05):** sentence embeddings with a shared-name check and average linkage, at 0.60, gave no wrong multi-outlet groups and 16 clean ones, against 4 that would publish wrongly and 9 clean today. Embeddings alone are worse, merging by topic. They find about the same number of matches as word matching, so the gain is fewer wrong stories.
 - **Cost:** about 110 MB of packages, a 90 MB model to cache in CI, and seconds to run. If that's too much, average linkage on word matching at 0.14 needs no new dependency and separates the Johnson and Jeffries stories, but it leaves wrong multi-outlet groups.
 - **Gaps:** 0.60 was picked on one unusual day, so test it on a normal week first. It also won't link stories with no shared name, and same-official-source rules were barely exercised.

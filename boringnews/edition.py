@@ -31,7 +31,7 @@ from .reposts import reposts
 from .sources import Source
 from .topics import LEGACY, TOPIC_DESCRIPTIONS, TOPICS
 
-FORMAT = 2  # 2 added story ids, which RSS guids and #story-N links depend on.
+FORMAT = 3  # 3 adds article action identities and collection context; reads formats 1 and 2.
 
 
 class NoEdition(LookupError):
@@ -56,6 +56,28 @@ def _page_articles(articles: list[Article]) -> list[dict]:
              "copy_of": copies[a.url].source_id if a.url in copies else None} for a in articles]
 
 
+def article_record(a: Article) -> dict:
+    return {"key": a.key, "source_id": a.source_id, "url": a.url, "event_id": a.event_id,
+            "title": a.title, "summary": a.summary, "published_at": a.published_at}
+
+
+def _record_coverage(clusters: list[list[Article]], sources: dict) -> dict:
+    coverage = {}
+    for group in clusters:
+        outlets = {a.source_id for a in group if sources.get(a.source_id, {}).get("type") not in (None, "primary")}
+        for a in group:
+            if sources.get(a.source_id, {}).get("type") == "primary":
+                coverage[a.key] = len(outlets)
+    return coverage
+
+
+def sources_from_records(records: dict) -> dict[str, Source]:
+    """A historical display snapshot, never used to fetch current feeds."""
+    return {sid: Source(id=sid, url="", **{k: v for k, v in item.items()
+            if k in {"name", "lean", "type", "role", "weight", "ratings"}})
+            for sid, item in records.items()}
+
+
 def _sources(sources: dict[str, Source]) -> dict:
     return {sid: s.record() for sid, s in sources.items()}
 
@@ -68,6 +90,9 @@ class Edition:
     markets: list[dict] = field(default_factory=list)
     feeds_down: list[str] = field(default_factory=list)  # sources we couldn't read that day
 
+    collection_window: dict | None = None
+    coverage_known: bool = True
+
     @classmethod
     def load(cls, conn, sources: dict[str, Source], date: str | None = None) -> "Edition":
         """The edition for `date`, or the latest one."""
@@ -77,14 +102,22 @@ class Edition:
         date = date or dates[0]
         if date not in dates:
             raise NoEdition(f"No edition for {date}")
-        return cls(date, db.load_edition(conn, date), sources, db.load_extra(conn, date, "markets", []),
-                   db.load_extra(conn, date, "feeds_down", []))
+        snapshot = db.load_extra(conn, date, "sources")
+        return cls(date, db.load_edition(conn, date), sources_from_records(snapshot) if snapshot is not None else sources,
+                   db.load_extra(conn, date, "markets", []), db.load_extra(conn, date, "feeds_down", []),
+                   db.load_extra(conn, date, "collection_window"), snapshot is not None)
 
-    def save(self, conn) -> None:
+    def save(self, conn, articles: list[Article] | None = None, clusters: list[list[Article]] | None = None) -> None:
         """Store it, replacing any earlier run for the same date. Sets story ids."""
         db.replace_edition(conn, self.date, self.stories)
         db.save_extra(conn, self.date, "markets", self.markets)
         db.save_extra(conn, self.date, "feeds_down", self.feeds_down)
+        db.save_extra(conn, self.date, "sources", _sources(self.sources))
+        db.save_extra(conn, self.date, "collection_window", self.collection_window)
+        if articles is not None:
+            db.save_extra(conn, self.date, "articles", [article_record(a) for a in articles])
+        if clusters is not None:
+            db.save_extra(conn, self.date, "record_coverage", _record_coverage(clusters, _sources(self.sources)))
 
     def page_data(self, base_url: str, sample: bool = False, data_url: str | None = None,
                   corrections: list[dict] | None = None, research_url: str | None = None,
@@ -101,6 +134,8 @@ class Edition:
             "ledger": ledger.load(),
             "markets": self.markets,
             "feeds_down": self.feeds_down,
+            "collection_window": self.collection_window,
+            "coverage_known": self.coverage_known,
             "research_url": research_url,
             "research": research,
             "rubric": _rubric(),
@@ -116,6 +151,7 @@ class Edition:
                     "whats_next": s.whats_next,
                     "topic": s.topic,
                     "checks": s.checks,
+                    "written_by": s.written_by,
                     "day": s.day,
                     "sides": s.sides,
                     "articles": _page_articles(s.articles),
@@ -160,9 +196,9 @@ class Edition:
                 "grouping": grouping,  # how articles were grouped: method, model and threshold
             },
             "sources": _sources(self.sources),
-            "articles": [{"source_id": a.source_id, "url": a.url, "title": a.title, "summary": a.summary,
-                          "published_at": a.published_at} for a in articles],
-            "clusters": [[a.url for a in g] for g in clusters],
+            "articles": [article_record(a) for a in articles],
+            "clusters": [[a.key for a in g] for g in clusters],
+            "collection_window": self.collection_window,
             "left_out": self._left_out(sports),
             "feeds_down": self.feeds_down,
             "markets": self.markets,
@@ -172,7 +208,7 @@ class Edition:
                     "headline": s.headline, "bullets": s.bullets, "whats_next": s.whats_next,
                     "topic": s.topic, "region": s.region, "written_by": s.written_by,
                     "checks": s.checks, "thread_id": s.thread_id, "day": s.day, "sides": s.sides,
-                    "articles": [a.url for a in s.articles],
+                    "articles": [a.key for a in s.articles],
                     "reposts": {url: first.url for url, first in reposts(s.articles).items()},
                     "score": rubric.score(self.sources[a.source_id] for a in s.articles
                                           if a.source_id in self.sources).to_dict(),
@@ -193,10 +229,15 @@ class Edition:
 def _restore_file(conn, data: dict) -> None:
     if data.get("format", 1) > FORMAT:
         raise ValueError(f"edition {data['edition']} has format {data['format']}; this code reads up to {FORMAT}")
-    by_url = {a["url"]: a for a in data["articles"]}
-    db.upsert_articles(conn, [Article(a["source_id"], a["url"], a["title"], a["summary"], a["published_at"])
-                              for a in data["articles"]])
-    ids = db.article_ids(conn, list(by_url))
+    by_key = {}
+    for raw in data["articles"]:
+        a = Article(raw["source_id"], raw["url"], raw["title"], raw["summary"], raw["published_at"],
+                    event_id=raw.get("event_id", ""))
+        by_key[raw.get("key", raw["url"])] = a
+    db.upsert_articles(conn, list(by_key.values()))
+    for a in by_key.values():
+        a.id = conn.execute("SELECT id FROM articles WHERE url=? AND event_id=?",
+                            (a.url, a.event_id)).fetchone()[0]
     stories = [
         Story(
             edition_date=data["edition"],
@@ -206,8 +247,7 @@ def _restore_file(conn, data: dict) -> None:
             topic=s["topic"],
             region=s["region"],
             written_by=s["written_by"],
-            articles=[Article(by_url[u]["source_id"], u, by_url[u]["title"], by_url[u]["summary"],
-                              by_url[u]["published_at"], id=ids[u]) for u in s["articles"] if u in by_url],
+            articles=[by_key[key] for key in s["articles"] if key in by_key],
             id=s.get("id"),
             checks=s.get("checks", {}),
             thread_id=s.get("thread_id"),
@@ -219,6 +259,13 @@ def _restore_file(conn, data: dict) -> None:
     db.replace_edition(conn, data["edition"], stories)
     db.save_extra(conn, data["edition"], "markets", data.get("markets", []))
     db.save_extra(conn, data["edition"], "feeds_down", data.get("feeds_down", []))
+    if "sources" in data:
+        db.save_extra(conn, data["edition"], "sources", data["sources"])
+    db.save_extra(conn, data["edition"], "articles", [article_record(a) for a in by_key.values()])
+    db.save_extra(conn, data["edition"], "collection_window", data.get("collection_window"))
+    if "clusters" in data:
+        groups = [[by_key[key] for key in group if key in by_key] for group in data["clusters"]]
+        db.save_extra(conn, data["edition"], "record_coverage", _record_coverage(groups, data.get("sources", {})))
 
 
 def restore(directory: Path, db_path: Path) -> int:

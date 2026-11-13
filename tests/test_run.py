@@ -154,7 +154,7 @@ def workflow(name):
 
 
 def test_nightly_build_requires_a_writer():
-    steps = workflow("nightly.yml")["jobs"]["edition"]["steps"]
+    steps = workflow("nightly.yml")["jobs"]["build"]["steps"]
     build = next(s for s in steps if s.get("name") == "Build today's edition")
     assert "--require-writer" in build["run"]
 
@@ -168,8 +168,16 @@ def test_pull_request_tests_cannot_publish():
     assert "secrets." not in text and "wrangler" not in text and "git push" not in text
     steps = flow["jobs"]["tests"]["steps"]
     assert any(s.get("with", {}).get("python-version") == "3.12" for s in steps)
-    assert any(s.get("with", {}).get("node-version") == "20" for s in steps)
-    assert [s["run"] for s in steps if "run" in s] == ["pip install -r requirements.txt", "npm ci", "pytest -q"]
+    assert any(s.get("with", {}).get("node-version") == "22" for s in steps)
+    assert [s["run"] for s in steps if "run" in s] == ["python -m pip install -r requirements-dev.lock", "python -m pip check", "npm ci", "npm run check", "python scripts/rehearse_publication.py build data/rehearsal"]
+
+    recovery = flow["jobs"]["recovery"]
+    assert recovery["needs"] == "tests"
+    assert all("permissions" not in job for job in flow["jobs"].values())
+    assert any(step.get("uses") == "actions/download-artifact@v4" for step in recovery["steps"])
+    assert [step["run"] for step in recovery["steps"] if "run" in step] == [
+        "python -m pip install -r requirements.lock",
+        "python scripts/rehearse_publication.py recover data/rehearsal"]
 
 
 def test_check_feeds_reports_each_source_and_fails_on_a_problem(capsys):

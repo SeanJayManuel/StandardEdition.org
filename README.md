@@ -129,13 +129,17 @@ These are real, unsolved, and we'd like help:
 
 ## Contributing
 
-Anyone can propose a new source, challenge a label, or suggest a rubric change by [opening an issue](https://github.com/SeanJayManuel/Boring-News/issues/new/choose) or pull request. Changes to sources, labels, ranking or writing rules need a written reason in the pull request, and the matching document in `docs/` or `editorial/` updated in the same change, so anyone can see why the edition works the way it does.
+The [prelaunch assessment](docs/prelaunch-assessment.md) records the current design and architecture decisions, implemented improvements, validation, and remaining launch work.
+
+Start with [CONTRIBUTING.md](CONTRIBUTING.md), the [development guide](docs/development.md), and the [architecture map](docs/architecture.md). [Governance](docs/governance.md) explains how editorial decisions are reviewed; [SECURITY.md](SECURITY.md) covers sensitive reports.
+
+Anyone can propose a new source, challenge a label, or suggest a rubric change by [opening an issue](https://github.com/SeanJayManuel/StandardEdition.org/issues/new/choose) or pull request. Changes to sources, labels, ranking or writing rules need a written reason in the pull request, and the matching document in `docs/` or `editorial/` updated in the same change, so anyone can see why the edition works the way it does.
 
 ## License
 
 Code: [AGPL-3.0](LICENSE). Anyone can use, copy or change Standard Edition, but anyone who runs a modified version publicly has to publish their changes too. That keeps it open.
 
-Docs, source lists and editorial rules: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+Docs, source lists and editorial rules: [CC BY-SA 4.0](LICENSES/CC-BY-SA-4.0.txt). See [license scope and third-party attribution](LICENSES/README.md).
 
 ---
 
@@ -143,7 +147,7 @@ Docs, source lists and editorial rules: [CC BY-SA 4.0](https://creativecommons.o
 
 ## Quick start (demo data, no API key)
 
-Needs Python 3.10 or newer, and Node.js for the RSS feeds and the tests.
+The supported development baseline is Python 3.12 and Node.js 22. Node runs RSS generation and the tests; the reader has no runtime npm dependencies.
 
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
@@ -231,7 +235,7 @@ edition.
 ## Pipeline
 
 ```
-sources.yaml ──► ingest (RSS) ──► SQLite ──► cluster (TF-IDF) ──► score (rubric)
+sources.yaml ──► ingest (RSS) ──► SQLite ──► cluster (embeddings / words) ──► score (rubric)
                                                                      │
           web page + /feed.xml ◄── web/core.js (URL query) ◄── edition ◄── rewrite (Claude + linter)
 ```
@@ -278,8 +282,7 @@ links), `BN_MODEL` (default `claude-haiku-5-5`), `BN_WRITER_URL` and
 `BN_WRITER_MODEL` (write with any OpenAI-compatible server, such as Ollama or
 llama.cpp, instead of Claude; the URL is the server's base address and the model
 name is published with each story), `BN_LOOKBACK_HOURS`,
-`BN_CLUSTER_SIMILARITY` (default 0.15, tuned on the sample data; re-tune on
-real feeds), `BN_CLUSTER_WINDOW_HOURS`, `BN_THREAD_SIMILARITY`, `BN_ARCHIVE`,
+`BN_EMBEDDING_SIMILARITY` (default 0.60) and `BN_WORD_SIMILARITY` (default 0.14; both provisional and requiring broader real-news evaluation), `BN_CLUSTER_WINDOW_HOURS`, `BN_THREAD_SIMILARITY`, `BN_ARCHIVE`,
 `BN_REPO_URL`, `BN_CONTACT_EMAIL` (shown on the About page), `BN_SAMPLE=1` (serve the sample source list).
 
 ## Market ticker
@@ -337,11 +340,12 @@ which the export writes next to the page.
 ## Tests
 
 ```bash
-npm install     # test-only: jsdom runs the reader page
-pytest -q
+python -m pip install -r requirements-dev.lock
+npm ci
+npm run check
 ```
 
-The site itself has no npm dependencies.
+The reader itself has no runtime npm dependencies. See the [development guide](docs/development.md) for lint-only checks, dependency updates, and browser validation.
 
 ## Notes
 

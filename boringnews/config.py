@@ -27,7 +27,7 @@ def sources_path(sample: bool) -> Path:
 BASE_URL = os.environ.get("BN_BASE_URL", "http://localhost:8000").rstrip("/")
 
 # Where the code lives (linked from the page).
-REPO_URL = os.environ.get("BN_REPO_URL", "https://github.com/SeanJayManuel/Boring-News")
+REPO_URL = os.environ.get("BN_REPO_URL", "https://github.com/SeanJayManuel/StandardEdition.org")
 
 # A private way to reach us, shown on the About page. Empty until the mailbox works.
 CONTACT_EMAIL = os.environ.get("BN_CONTACT_EMAIL", "")

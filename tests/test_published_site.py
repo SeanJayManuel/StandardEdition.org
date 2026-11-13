@@ -497,7 +497,7 @@ def test_ledger_is_on_the_site_and_adds_up_from_its_rows(site):
     assert f"${book['spent']:.2f} spent so far" in page["ledgerLede"]
     assert page["ledgerRows"] == len(book["money_out"]) and page["ledgerRules"] == len(book["rules"])
     assert "No donations are accepted yet" in page["ledgerIn"]
-    assert page["title"] == "Public ledger | The Standard Edition" and page["tabCount"] == 7
+    assert page["title"] == "Public ledger | The Standard Edition" and page["tabCount"] == 8
 
 
 def test_ledger_file_totals_match_its_rows():

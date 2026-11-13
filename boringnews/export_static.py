@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import shutil
 from pathlib import Path
 
@@ -24,7 +25,8 @@ from . import config, public_api, research
 from .db import connect
 from .edition import Edition, NoEdition
 from .reader import feeds
-from .render import load_corrections, render_page
+from .render import (load_corrections, render_page, render_archived_story,
+                     render_archived_edition, render_archive_index, story_path)
 from .sources import load_sources
 from .topics import TOPICS
 
@@ -60,11 +62,56 @@ def export(edition: Edition, research_index: dict, out: Path, base_url: str, sam
     (out / "edition.json").write_text(json.dumps(data, ensure_ascii=False))
     written += [out / "index.html", out / "edition.json"]
 
+    # Every published snapshot gets permanent, readable pages, independently of
+    # the rolling research index. The live edition also works before archiving.
+    snapshots = {}
+    for f in sorted((out / "archive").glob("*.json")):
+        if re.fullmatch(r"\d{4}-\d{2}-\d{2}\.json", f.name):
+            snapshot = json.loads(f.read_text())
+            if snapshot.get("edition") != f.stem:
+                raise ValueError(f"Archive date does not match filename: {f.name}")
+            snapshots[f.stem] = snapshot
+    if edition.date not in snapshots:
+        snapshots[edition.date] = {**data, "articles": [], "stories": [
+            {**s, "written_by": original.written_by} for s, original in zip(data["stories"], edition.stories)
+        ]}
+    story_index = {}
+    urls = [base_url + "/", base_url + "/editions/"]
+    for date, snapshot in snapshots.items():
+        snapshot = {**snapshot, "sample": sample or snapshot.get("sample", False)}
+        folder = out / "editions" / date
+        folder.mkdir(parents=True, exist_ok=True)
+        path = folder / "index.html"
+        path.write_text(render_archived_edition(snapshot, base_url))
+        written.append(path)
+        urls.append(base_url + f"/editions/{date}/")
+        for story in snapshot["stories"]:
+            if story.get("id") is None:  # pre-format-2 archives had no stable identity
+                continue
+            path = out / story_path(date, story["id"]).lstrip("/") / "index.html"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(render_archived_story(snapshot, story, base_url))
+            written.append(path)
+            story_index[str(story["id"])] = story_path(date, story["id"])
+            urls.append(base_url + story_path(date, story["id"]))
+    archive_index = out / "editions" / "index.html"
+    archive_index.write_text(render_archive_index(list(snapshots), base_url, sample))
+    (out / "story-index.json").write_text(json.dumps(story_index, sort_keys=True))
+    from xml.sax.saxutils import escape
+    (out / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' +
+        ''.join('<url><loc>' + escape(u) + '</loc></url>' for u in urls) + '</urlset>')
+    (out / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {base_url}/sitemap.xml\n")
+    written += [archive_index, out / "story-index.json", out / "sitemap.xml", out / "robots.txt"]
+
     # The favicon and the image a shared link previews with.
     (out / "brand").mkdir(exist_ok=True)
-    for f in sorted(BRAND.glob("*.png")):
-        shutil.copy(f, out / "brand" / f.name)
-        written.append(out / "brand" / f.name)
+    for f in sorted(BRAND.rglob("*")):
+        if f.is_file() and f.suffix in {".png", ".woff2", ".woff", ".txt"}:
+            target = out / "brand" / f.relative_to(BRAND)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy(f, target)
+            written.append(target)
 
     if cname:  # GitHub Pages custom domain
         (out / "CNAME").write_text(cname.strip() + "\n")

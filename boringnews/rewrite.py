@@ -272,7 +272,29 @@ def _verify_with_model(writer, bullets, articles, sources) -> dict[int, dict]:
     text = writer.complete(VERIFY_PROMPT, [{"role": "user", "content": content}])
     start, end = text.find("["), text.rfind("]")
     items = json.loads(text[start : end + 1])
-    return {int(x["n"]): x for x in items}
+    if not isinstance(items, list) or len(items) != len(bullets):
+        raise ValueError("verification must include every statement exactly once")
+    verdicts = {}
+    for item in items:
+        if (not isinstance(item, dict) or type(item.get("n")) is not int
+                or not 1 <= item["n"] <= len(bullets) or item["n"] in verdicts
+                or type(item.get("supported")) is not bool):
+            raise ValueError("invalid verification verdict")
+        # Citation text must occur verbatim in a supplied source. A model's
+        # support assessment remains a model judgment, not a proof of truth.
+        evidence = []
+        for cite in item.get("sources", []) if isinstance(item.get("sources", []), list) else []:
+            if not isinstance(cite, dict) or type(cite.get("article")) is not int:
+                continue
+            index, quote = cite["article"], cite.get("quote")
+            if not 1 <= index <= len(articles) or not isinstance(quote, str) or not quote.strip():
+                continue
+            a = articles[index - 1]
+            if quote in a.title or quote in a.summary:
+                evidence.append({"source_id": a.source_id, "url": a.url, "quote": quote})
+        item["evidence"] = evidence if item["supported"] else []
+        verdicts[item["n"]] = item
+    return verdicts
 
 
 def fallback(articles: list[Article], sources: dict[str, Source], banned: list[str]) -> Draft:
@@ -362,7 +384,9 @@ For each statement, decide if the articles support it. A statement is supported 
 every fact in it appears in at least one article; attributed claims ("X said") are
 supported if the article reports that X said it.
 
-Return ONLY a JSON array, one object per statement: {"n": <number>, "supported": true|false, "reason": "<short>"}.
+Return ONLY a JSON array, one object per statement: {"n": <number>, "supported": true|false, "reason": "<short>", "sources": [{"article": <article number>, "quote": "<verbatim supporting excerpt>"}]}.
+For supported statements, cite the article numbers above and exact excerpts supporting the statement.
+Do not invent excerpts. Use an empty sources array when unsupported.
 """
 
 
@@ -388,8 +412,8 @@ def _check_sides(draft: Draft, articles: list[Article], sources: dict[str, Sourc
                 good = []
             else:
                 for i, line in enumerate(list(good), 1):
-                    v = verdicts.get(i, {"supported": True})
-                    if not v.get("supported", True):
+                    v = verdicts[i]
+                    if not v["supported"]:
                         good.remove(line)
                         dropped.append({"text": line, "reason": f"{lean}: model: " + str(v.get("reason", "not supported"))})
         if good:
@@ -408,21 +432,25 @@ def check_facts(draft: Draft, articles: list[Article], sources: dict[str, Source
         else:
             kept.append(b)
     method = "numbers"
+    claims = [{"text": b, "status": "numbers-only", "sources": []} for b in kept]
 
     if writer is not None and writer.checks_facts and kept:
         try:
             verdicts = _verify_with_model(writer, kept, articles, sources)
             method = "numbers+model"
             still = []
+            claims = []
             for i, b in enumerate(kept, 1):
-                v = verdicts.get(i, {"supported": True})
-                if v.get("supported", True):
+                v = verdicts[i]
+                if v["supported"]:
                     still.append(b)
+                    claims.append({"text": b, "status": "model-supported", "sources": v["evidence"]})
                 else:
                     dropped.append({"text": b, "reason": "model: " + str(v.get("reason", "not supported"))})
             kept = still
         except Exception as exc:  # a failed check never blocks the edition; it is logged
             method = f"numbers (model check failed: {exc.__class__.__name__})"
+            claims = [{"text": b, "status": "unchecked", "sources": []} for b in kept]
 
     whats_next = draft.whats_next
     if whats_next and unsupported_numbers(whats_next, source_text):
@@ -439,7 +467,7 @@ def check_facts(draft: Draft, articles: list[Article], sources: dict[str, Source
     draft.sides = sides
     side_lines = sum(len(lines) for lines in sides.values())
     draft.checks = {"method": method, "checked": len(kept) + side_lines + len(dropped), "dropped": dropped,
-                    "headline_ok": headline_ok}
+                    "headline_ok": headline_ok, "claims": claims}
     return draft
 
 

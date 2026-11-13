@@ -84,3 +84,82 @@ def api_docs():
 @app.get("/healthz")
 def healthz():
     return {"ok": True}
+
+
+# Durable reading routes use archived snapshots, never the rolling research index.
+def _snapshot(date: str) -> dict:
+    import json
+    import re
+    from .render import load_corrections
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", date):
+        raise HTTPException(404, "Unknown edition")
+    path = config.ARCHIVE_DIR / f"{date}.json"
+    if path.is_file():
+        return {**json.loads(path.read_text()), "sample": SAMPLE}
+    edition = _edition(date)
+    data = edition.page_data(config.BASE_URL, sample=SAMPLE, corrections=load_corrections())
+    for story, original in zip(data["stories"], edition.stories):
+        story["written_by"] = original.written_by
+    return data
+
+
+@app.get("/archive/{date}.json")
+def archived_evidence(date: str):
+    import json
+    import re
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", date):
+        raise HTTPException(404, "Unknown edition")
+    path = config.ARCHIVE_DIR / f"{date}.json"
+    if not path.is_file():
+        raise HTTPException(404, "Unknown edition")
+    return JSONResponse(json.loads(path.read_text()))
+
+
+@app.get("/editions/", response_class=HTMLResponse)
+def archive_index():
+    from .render import render_archive_index
+    from .db import editions
+    conn = connect(config.DB_PATH)
+    try:
+        dates = set(editions(conn))
+        dates.update(p.stem for p in config.ARCHIVE_DIR.glob("????-??-??.json"))
+        return render_archive_index(sorted(dates), config.BASE_URL, SAMPLE)
+    finally:
+        conn.close()
+
+
+@app.get("/editions/{date}/", response_class=HTMLResponse)
+def archived_edition(date: str):
+    from .render import render_archived_edition
+    return render_archived_edition(_snapshot(date), config.BASE_URL)
+
+
+@app.get("/editions/{date}/stories/{story_id}/", response_class=HTMLResponse)
+def archived_story(date: str, story_id: int):
+    from .render import render_archived_story
+    snapshot = _snapshot(date)
+    story = next((s for s in snapshot["stories"] if s.get("id") == story_id), None)
+    if story is None:
+        raise HTTPException(404, "Unknown story")
+    return render_archived_story(snapshot, story, config.BASE_URL)
+
+
+@app.get("/story-index.json")
+def story_index():
+    import json
+    from .render import story_path
+    from .db import editions, load_edition
+    result = {}
+    conn = connect(config.DB_PATH)
+    try:
+        for date in editions(conn):
+            for story in load_edition(conn, date):
+                result[str(story.id)] = story_path(date, story.id)
+    finally:
+        conn.close()
+    for path in sorted(config.ARCHIVE_DIR.glob("????-??-??.json")):
+        snapshot = json.loads(path.read_text())
+        for story in snapshot.get("stories", []):
+            if story.get("id") is not None:
+                result[str(story["id"])] = story_path(snapshot["edition"], story["id"])
+    return result

@@ -9,6 +9,8 @@ Fetchers (set per source in sources.yaml with `fetcher:`):
 
 from __future__ import annotations
 
+import hashlib
+
 import html
 import json
 import os
@@ -171,7 +173,8 @@ def congress_items(data: dict, source_id: str, since: datetime, summary_for=lamb
         url = f"https://www.congress.gov/bill/{_ordinal(congress)}-congress/{BILL_PATH[btype]}/{number}"
         label = f"{BILL_LABEL[btype]} {number}"
         summary = " ".join(filter(None, [clean(f"Latest action on {day}: {text}"), summary_for(b)]))
-        out.append(Article(source_id, url, clean(f"{label}: {b.get('title', '')}", 300), summary, _noon_utc(day)))
+        event_id = hashlib.sha256(f"{day}:{text}".encode()).hexdigest()[:20]
+        out.append(Article(source_id, url, clean(f"{label}: {b.get('title', '')}", 300), summary, _noon_utc(day), event_id=event_id))
     return out
 
 

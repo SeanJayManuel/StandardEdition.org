@@ -18,9 +18,44 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements*.lock
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
-      - run: pip install -r requirements.txt
-      - run: npm ci        # jsdom, for the page tests
-      - run: pytest -q
+          node-version: "22"
+          cache: npm
+      - run: python -m pip install -r requirements-dev.lock
+      - run: python -m pip check
+      - run: npm ci
+      - run: npm run check
+      - name: Build a fictional publication for recovery rehearsal
+        run: python scripts/rehearse_publication.py build data/rehearsal
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rehearsal-${{ github.run_id }}
+          path: data/rehearsal/
+          if-no-files-found: error
+          retention-days: 7
+
+  recovery:
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements*.lock
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: python -m pip install -r requirements.lock
+      - uses: actions/download-artifact@v4
+        with:
+          name: rehearsal-${{ github.run_id }}
+          path: data/rehearsal
+      - name: Recover on a fresh runner and compare every published file
+        run: python scripts/rehearse_publication.py recover data/rehearsal

@@ -1,0 +1,25 @@
+name: Code bug
+description: Report incorrect behavior in the website, pipeline, or tools.
+title: "Bug: "
+body:
+  - type: markdown
+    attributes:
+      value: "For a wrong summary use the wrong-story form. For a security issue read SECURITY.md; do not include secrets or exploit details here."
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Smallest reproduction
+      description: Steps, edition or commit, browser/OS or Python/Node versions. Prefer fictional fixtures.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Redacted logs or screenshots. Include the command and result if you ran checks.
