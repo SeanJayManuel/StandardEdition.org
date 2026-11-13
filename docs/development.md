@@ -64,3 +64,5 @@ python scripts/rehearse_publication.py recover data/rehearsal
 ```
 
 This validates loss of the working database and transfer of the publication artifact. It does not prove Cloudflare deployment, GitHub archive pushes, provider availability, or rollback on the live domain. The manifest detects accidental corruption; it is not a cryptographic signature from a trusted publisher.
+
+See the [launch checklist](launch-checklist.md) for operational prerequisites and recovery actions on the live host.

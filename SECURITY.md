@@ -4,7 +4,7 @@ The maintained version is the current `main` branch. Older deployments should be
 
 ## Report privately
 
-Use GitHub's [Report a vulnerability](https://github.com/SeanJayManuel/StandardEdition.org/security/advisories/new) flow **if it is enabled for this repository**. This repository file cannot enable that account setting. The maintainer must enable private vulnerability reporting before inviting security reports.
+Use GitHub's [Report a vulnerability](https://github.com/SeanJayManuel/StandardEdition.org/security/advisories/new) flow. Private vulnerability reporting is enabled for this repository.
 
 If that page is unavailable, open a public issue titled “Private security contact requested” without vulnerability details, credentials, affected private URLs, or reproduction payloads. Wait for a private channel from the maintainer before sharing sensitive details. No private mailbox or response-time guarantee is currently published.
 

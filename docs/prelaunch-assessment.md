@@ -26,7 +26,7 @@ Regression coverage includes database migration, archive restoration, successive
 
 ## Next decisions, in order
 
-1. Run hosted CI and a private production-like publishing rehearsal, including redeploy and partial-failure recovery. Configure the hosting credentials and GitHub private vulnerability reporting; docs cannot enable account settings.
+1. Run hosted CI and a private production-like publishing rehearsal, including redeploy and partial-failure recovery. Configure the hosting credentials. GitHub private vulnerability reporting has been enabled; the nightly publisher remains disabled until launch.
 2. Review several real editions against original reporting. Measure grouping precision, false omissions, verifier failures, token cost, and feed freshness. Publish the results before describing provisional labels or ranking as independently validated.
 3. Check mobile loading on the deployed domain and perform a keyboard/screen-reader pass. A synthetic size budget cannot establish LCP, INP, or accessibility conformance.
 4. Review source-label evidence and source permissions. Expand center/right coverage only with documented rationale and stable feeds.
