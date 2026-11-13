@@ -13,7 +13,7 @@ Each source in `sources.yaml` lists:
 
 ## Where lean labels come from
 
-We don't invent lean labels. A source can list ratings from several published media-rating services:
+Current hand-set lean labels are provisional starting assumptions, not a claim that the source list already has cited ratings. A source can list ratings from several published media-rating services:
 
 ```yaml
 - id: example
@@ -30,7 +30,7 @@ Each rating is turned into a number (left −2, lean left −1, center 0, lean r
 
 The raters and their individual labels are shown on the site next to the outlet, so readers can see where the label came from and where raters disagree.
 
-Some sources still carry a single hand-set `lean` taken from public ratings. Those are starting assumptions and should be replaced with cited `ratings` over time. Labels are reviewed quarterly.
+Sources without cited `ratings` carry a hand-set `lean`; these labels are provisional. A rating proposal must include the service, rating URL, original label, and date checked in its PR. Do not fabricate or imply completed verification. The intended review cadence is quarterly; record each actual review date. See [governance](governance.md) for challenges and decisions.
 
 **Unrated** outlets count toward a story's coverage but not its breadth.
 
@@ -42,7 +42,7 @@ Example: with 4 left, 3 center and 3 right outlets, each left outlet counts 0.83
 
 ## Adding or removing a source
 
-Use the [source form](https://github.com/SeanJayManuel/Boring-News/issues/new/choose) to propose a change, or open a pull request that edits `sources.yaml` and explains in the description:
+Use the [source form](https://github.com/SeanJayManuel/StandardEdition.org/issues/new/choose) to propose a change, or open a pull request that edits `sources.yaml` and explains in the description:
 
 1. Why the source should be included (or removed)
 2. Where its lean label comes from, with links to the ratings

@@ -5,3 +5,12 @@ __pycache__/
 data/
 site/
 node_modules/
+
+# Local credentials and development tooling
+.env
+.env.*
+!.env.example
+.ruff_cache/
+.wrangler/
+playwright-report/
+test-results/

@@ -5,6 +5,7 @@ import json
 
 from boringnews import archive, config, rubric
 from boringnews.db import Article, connect, load_edition
+from boringnews.edition import FORMAT
 from boringnews.inputs import FixtureInputs
 from boringnews.pipeline import run
 from boringnews.sources import load_sources
@@ -96,7 +97,7 @@ def test_the_edition_file_publishes_the_rule_even_when_nothing_was_dropped(tmp_p
 def test_an_edition_file_with_a_dropped_group_still_restores(tmp_path):
     arts = three_outlets(["quarterback", "zanetti"]) + three_outlets(["harbor", "dredging"], NEWS, NEWS, NEWS)
     stories, file = edition(tmp_path, arts)
-    assert file["format"] == 2 and file["left_out"]["sports"]["groups"]
+    assert file["format"] == FORMAT and file["left_out"]["sports"]["groups"]
     assert archive.restore(tmp_path / "a", tmp_path / "r.db") == 1
     assert written(load_edition(connect(tmp_path / "r.db"), DATE)) == written(stories)
 

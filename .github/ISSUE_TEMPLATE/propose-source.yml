@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: >-
-        Sources are chosen in public. See [how sources are chosen and labeled](https://github.com/SeanJayManuel/Boring-News/blob/main/docs/labeling.md).
+        Sources are chosen in public. See [how sources are chosen and labeled](https://github.com/SeanJayManuel/StandardEdition.org/blob/main/docs/labeling.md).
         This issue starts the discussion; the change itself is a pull request that edits `sources.yaml` and gives the same reasons.
   - type: dropdown
     id: change

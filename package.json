@@ -1,8 +1,17 @@
 {
   "name": "standard-edition-tests",
   "private": true,
-  "description": "Test-only: jsdom runs web/app.js in tests/page_smoke.cjs. The site itself has no npm dependencies.",
+  "description": "Development and deployment tooling. The reader has no runtime npm dependencies.",
   "devDependencies": {
-    "jsdom": "26.1.0"
+    "jsdom": "26.1.0",
+    "wrangler": "4.160.1"
+  },
+  "engines": {
+    "node": ">=22 <23"
+  },
+  "scripts": {
+    "check": "node scripts/check.mjs",
+    "lint": "node scripts/check.mjs --lint-only",
+    "test": "node scripts/check.mjs"
   }
 }

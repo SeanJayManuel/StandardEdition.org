@@ -16,11 +16,13 @@ SCHEMA = """
 CREATE TABLE IF NOT EXISTS articles (
     id           INTEGER PRIMARY KEY,
     source_id    TEXT NOT NULL,
-    url          TEXT NOT NULL UNIQUE,
+    url          TEXT NOT NULL,
+    event_id     TEXT NOT NULL DEFAULT '',
     title        TEXT NOT NULL,
     summary      TEXT NOT NULL DEFAULT '',
     published_at TEXT NOT NULL,
-    fetched_at   TEXT NOT NULL
+    fetched_at   TEXT NOT NULL,
+    UNIQUE(url, event_id)
 );
 CREATE INDEX IF NOT EXISTS idx_articles_published ON articles(published_at);
 
@@ -65,6 +67,11 @@ class Article:
     summary: str
     published_at: str  # ISO 8601, UTC
     id: int | None = None
+    event_id: str = ""  # stable action identity; empty for ordinary feed articles
+
+    @property
+    def key(self) -> str:
+        return self.url if not self.event_id else self.url + "#bn-event-" + self.event_id
 
     @property
     def published(self) -> datetime:
@@ -107,6 +114,19 @@ def connect(path: Path) -> sqlite3.Connection:
     conn = sqlite3.connect(path)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
+    # Older caches keyed articles only by URL. Rebuild that table while preserving
+    # integer IDs so existing story joins remain immutable.
+    existing = {r[1] for r in conn.execute("PRAGMA table_info(articles)")}
+    if existing and "event_id" not in existing:
+        conn.execute("PRAGMA foreign_keys = OFF")
+        article_schema = SCHEMA.split("CREATE INDEX", 1)[0].replace("articles (", "articles_new (")
+        with conn:
+            conn.execute(article_schema)
+            conn.execute("INSERT INTO articles_new (id, source_id, url, title, summary, published_at, fetched_at) "
+                         "SELECT id, source_id, url, title, summary, published_at, fetched_at FROM articles")
+            conn.execute("DROP TABLE articles")
+            conn.execute("ALTER TABLE articles_new RENAME TO articles")
+        conn.execute("PRAGMA foreign_keys = ON")
     conn.executescript(SCHEMA)
     have = {r[1] for r in conn.execute("PRAGMA table_info(stories)")}
     for col, sql in MIGRATIONS.items():
@@ -117,12 +137,12 @@ def connect(path: Path) -> sqlite3.Connection:
 
 
 def upsert_articles(conn: sqlite3.Connection, articles: list[Article]) -> int:
-    """Insert new articles, ignore ones already stored (by URL). Returns count inserted."""
+    """Insert new articles, ignore already stored URL/action versions. Returns count inserted."""
     before = conn.total_changes
     conn.executemany(
-        "INSERT OR IGNORE INTO articles (source_id, url, title, summary, published_at, fetched_at) "
-        "VALUES (?, ?, ?, ?, ?, ?)",
-        [(a.source_id, a.url, a.title, a.summary, a.published_at, now_iso()) for a in articles],
+        "INSERT OR IGNORE INTO articles (source_id, url, title, summary, published_at, fetched_at, event_id) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?)",
+        [(a.source_id, a.url, a.title, a.summary, a.published_at, now_iso(), a.event_id) for a in articles],
     )
     conn.commit()
     return conn.total_changes - before
@@ -172,7 +192,7 @@ def load_extra(conn: sqlite3.Connection, edition_date: str, key: str, default=No
 
 
 def editions(conn: sqlite3.Connection) -> list[str]:
-    rows = conn.execute("SELECT DISTINCT edition_date FROM stories ORDER BY edition_date DESC").fetchall()
+    rows = conn.execute("SELECT edition_date FROM stories UNION SELECT edition_date FROM extras ORDER BY edition_date DESC").fetchall()
     return [r[0] for r in rows]
 
 
@@ -218,4 +238,5 @@ def _article(r: sqlite3.Row) -> Article:
         title=r["title"],
         summary=r["summary"],
         published_at=r["published_at"],
+        event_id=r["event_id"],
     )

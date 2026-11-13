@@ -65,7 +65,7 @@ const TOOLS = [
   {
     name: "search_coverage",
     title: "Search coverage",
-    description: "Find which outlets covered a claim, headline or link, and which rated outlets didn't run it. " +
+    description: "Find which outlets covered a claim, headline or link, and where coverage was not observed in monitored feeds. " +
       `Covers the last ${SEARCH_DAYS} days. Finding no coverage doesn't mean a claim is false. ${RULE}`,
     inputSchema: {
       type: "object",
@@ -192,7 +192,7 @@ async function getEdition(args, env, origin) {
     throw new ToolError(args.date ? `No edition has been published for ${args.date}. /api/v1/index.json lists them.`
       : "No edition has been published yet.");
   }
-  const articles = new Map(file.articles.map((a) => [a.url, a]));
+  const articles = new Map(file.articles.map((a) => [a.key || a.url, a]));
   const ranked = [...file.stories].sort((a, b) => b.score.total - a.score.total || a.id - b.id);
   return {
     edition: file.edition,
@@ -205,7 +205,7 @@ async function getEdition(args, env, origin) {
       score: s.score,
       articles: s.articles.filter((url) => articles.has(url)).map((url) => {
         const a = articles.get(url), src = file.sources[a.source_id] || {};
-        return { source_id: a.source_id, outlet: src.name || a.source_id, lean: src.lean, title: a.title, url };
+        return { source_id: a.source_id, outlet: src.name || a.source_id, lean: src.lean, title: a.title, url: a.url };
       }),
     })),
   };
@@ -213,30 +213,35 @@ async function getEdition(args, env, origin) {
 
 async function searchCoverage(args, env, origin) {
   const { index, sources } = await researchData(env, origin);
-  const core = globalThis.BoringCore.create(sources);
   const found = globalThis.BoringCore.research.lookup(index, args.query, { limit: args.limit || 5 });
-  const rated = Object.keys(sources.sources).filter((id) => {
-    const s = sources.sources[id];
-    return s.type !== "primary" && s.lean !== "unrated";
-  });
   return {
     how: found.how,
     last_days: SEARCH_DAYS,
     note: found.matches.length ? `${WORD_MATCH} ${RULE}` : `${NO_COVERAGE} ${RULE}`,
     matches: found.matches.map(({ story, strength }) => {
       const ids = story.articles.map((a) => a.source_id);
+      const context = globalThis.BoringCore.research.coverageContext(index, story, sources.sources);
+      const core = globalThis.BoringCore.create({ ...sources, sources: context.sources });
       const sc = core.score(ids);
+      const names = (ids, map) => ids.map((id) => map[id].name).sort();
       return {
         date: story.date, day: story.day, headline: story.headline, bullets: story.bullets, strength,
         match: strength >= 0.75 ? "close" : "possible",
         score: { total: sc.total, outlets: sc.outlets, leans: sc.leans, has_record: sc.hasRecord },
         why: core.explain(sc),
         covered_by: story.articles.map((a) => {
-          const s = sources.sources[a.source_id] || {};
+          const s = context.sources[a.source_id] || {};
           return { source_id: a.source_id, outlet: s.name || a.source_id, lean: s.lean, type: s.type,
                    title: a.title, url: a.url };
         }),
-        did_not_run: rated.filter((id) => !ids.includes(id)).map((id) => sources.sources[id].name).sort(),
+        // Compatibility alias: absence is only reported for monitored, readable feeds.
+        did_not_run: names(context.not_observed, context.sources),
+        not_observed: names(context.not_observed, context.sources),
+        unavailable: names(context.unavailable, context.sources),
+        not_monitored: names(context.not_monitored, sources.sources),
+        coverage_known: context.known,
+        coverage_note: context.known ? "Not observed in the feeds read that day; feeds are not complete publication records."
+          : "Historical collection health is unknown; absence of coverage cannot be established.",
       };
     }),
   };

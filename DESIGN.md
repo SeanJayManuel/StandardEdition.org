@@ -620,3 +620,15 @@ Before merging any change a reader can see:
 | Fidabio news section | A strong statement beside a simple story list | Gradient button and repeated boxes |
 | Dstudio news section | Serif headlines with rich column rhythm | Highlighted phrases and photos |
 | Scott Bair's playbook | Brand as a system: positioning, messaging, identity and rules | Its focus on sales and premium pricing |
+
+## Reader refinements (2026-11-12)
+
+The newspaper identity, palette and typography remain. These rules supersede conflicting version-1 component guidance above:
+
+- Lead text comes first on phones; the duplicate large coverage picture is hidden below 881px. Compact labeled coverage bars remain visible.
+- Market closes live in an optional disclosure under How it works, not in the masthead of every page.
+- Coverage health has a compact disclosure: recorded collection window, unavailable sources, provisional labels and the limitations of RSS sampling. Say “not found in the feeds we read,” not that an outlet ignored or missed something.
+- Reader settings use a single column. Topics, breadth and reading length are primary; ranking weights and individual sources are under Advanced. All categories is explicit, and narrowing retains at least one category. URL recipes keep their existing contract.
+- Put summary provenance near the reading text. Statement evidence is an expandable list of original-source quotations. A model-supported statement is not an independently established fact; numeric matching alone must never be described as verification of the claim.
+- Past editions and stories have permanent dated URLs and readable HTML without JavaScript. Share links target these pages. Keep navigation, readable line length and the same type families across both reader and archive.
+- Fonts are served from this site, with their licenses in `web/brand/fonts/`. No runtime request to a third-party font host is necessary.

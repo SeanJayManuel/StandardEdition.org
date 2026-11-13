@@ -134,7 +134,8 @@ def run(inputs, writer, db_path, edition_date: str, archive_dir=None, require_wr
 
     # 7. Store, and write the public edition file
     edition = Edition(edition_date, stories, sources, ticker, [h.source_id for h in health if not h.ok])
-    edition.save(conn)
+    edition.collection_window = {"start": start, "end": end}
+    edition.save(conn, articles, clusters)
     print(f"Edition {edition_date}: {len(stories)} stories stored in {db_path}.")
     if archive_dir:
         path = edition.write_file(archive_dir, articles, clusters, writer.model if writer else "none (fallback writer)",

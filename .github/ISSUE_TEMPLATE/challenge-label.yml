@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: >-
-        We don't invent lean labels: they come from published rating services, averaged by a [written rule](https://github.com/SeanJayManuel/Boring-News/blob/main/docs/labeling.md).
+        Our current hand-set labels are provisional. Where cited service ratings are available, they are averaged by a [written rule](https://github.com/SeanJayManuel/StandardEdition.org/blob/main/docs/labeling.md).
         A challenge is strongest when it cites a rating, not a view of the outlet.
   - type: input
     id: source

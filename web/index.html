@@ -18,10 +18,6 @@
 <meta property="og:image:alt" content="The Standard Edition. 100% transparent. 100% free. Always.">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="alternate" type="application/rss+xml" title="The Standard Edition" href="/feed.xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,500&family=Source+Sans+3:wght@400;600&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manufacturing+Consent&text=S&display=swap">
 <script>
   // Light by default. Dark only if the reader chose it here, or the host app asks for it.
   (function () {
@@ -53,19 +49,13 @@
       <a href="#all-stories" data-view="all-stories">All stories</a>
       <a href="#outlets" data-view="outlets">Outlets</a>
       <a href="#research" data-view="research">Research</a>
+      <a href="/editions/">Past editions</a>
       <a href="#how-it-works" data-view="how-it-works">How it works</a>
       <a href="#your-feed" data-view="your-feed">Your feed</a>
       <a href="#about" data-view="about">About us</a>
     </nav>
   </div>
-  <div class="ticker" id="ticker" hidden>
-    <div class="ticker-inner">
-      <a class="ticker-label" id="ticker-label" href="#how-it-works"></a>
-      <div class="ticker-window">
-        <div class="ticker-track" id="ticker-track"></div>
-      </div>
-    </div>
-  </div>
+
 </header>
 
 <main class="page" id="main" tabindex="-1">
@@ -73,6 +63,7 @@
   <!-- Today: the spotlight -->
   <section class="view" id="view-today" data-view="today">
     <div class="notices" id="notices"></div>
+    <details class="coverage-health"><summary>Coverage health and limits</summary><div id="coverage-health"></div></details>
     <div class="intro">
       <h1 class="lede" id="lede"></h1>
       <p class="sublede" id="sublede"></p>
@@ -96,7 +87,7 @@
     <div class="intro">
       <h1 class="title">All stories</h1>
       <p class="sublede" id="all-summary"></p>
-      <p class="hint" id="all-key">Each mark is one outlet that ran the story. Stripes mean no outlet on that side ran it.</p>
+      <p class="hint" id="all-key">Each mark is one outlet in our feeds. Stripes mean no coverage found on that side, within our collection window.</p>
       <nav class="jump" id="topic-jump" aria-label="Topics"></nav>
     </div>
     <div id="all"></div>
@@ -127,7 +118,7 @@
 
     <div class="sheet prose">
       <h2>Look up coverage</h2>
-      <p>Paste a claim, a headline or a link. You'll see which outlets covered it, which didn't, and any government record behind it.</p>
+      <p>Paste a claim, a headline or a link. You'll see which outlets covered it, where we found no coverage, and any government record behind it.</p>
       <form class="search" id="lookup-form" role="search">
         <input id="lookup-q" name="lookup" type="search" autocomplete="off" placeholder="Judge blocks voter ID rule…" aria-label="Claim, headline or link">
         <button type="submit">Look up</button>
@@ -227,7 +218,17 @@
           <tbody id="source-table"></tbody>
         </table>
       </div>
-      <p>The market closes at the top show the latest closing values from FRED, the St. Louis Fed's free data service. They update once a day with the edition, so they aren't live. FRED posts each series on its own schedule, so a value that lags shows its own date, and each one links to its source.</p>
+      <details class="market-details"><summary>Market closes</summary>
+  <div class="ticker" id="ticker" hidden>
+    <div class="ticker-inner">
+      <a class="ticker-label" id="ticker-label" href="#how-it-works"></a>
+      <div class="ticker-window">
+        <div class="ticker-track" id="ticker-track"></div>
+      </div>
+    </div>
+  </div>
+      </details>
+      <p>The optional market closes show the latest closing values from FRED, the St. Louis Fed's free data service. They update once a day with the edition, so they aren't live. FRED posts each series on its own schedule, so a value that lags shows its own date, and each one links to its source.</p>
       <p class="fine" id="rubric-version"></p>
     </div>
   </section>
@@ -247,30 +248,33 @@
           <p class="hint" id="threshold-hint"></p>
         </fieldset>
         <fieldset>
+          <legend>Categories</legend>
+          <p class="hint">Choose all categories or select at least one.</p>
+          <label><input type="checkbox" id="all-topics"> All categories</label>
+          <div class="options cats" id="topics"></div>
+        </fieldset>
+        <fieldset>
+          <legend>Show</legend>
+          <div class="options stacked">
+            <label for="official"><input type="checkbox" id="official" name="official"> Government items with no coverage found in our feeds</label>
+            <label for="blindspots"><input type="checkbox" id="blindspots" name="blindspots"> Stories only one side ran</label>
+            <label for="statements"><input type="checkbox" id="statements" name="statements"> Government statements, like press releases</label>
+            <label for="headlines-only"><input type="checkbox" id="headlines-only" name="headlines-only"> Headlines only</label>
+          </div>
+        </fieldset>
+        <details class="advanced-settings"><summary>Advanced: ranking and sources</summary>
+        <fieldset>
           <legend>What counts most</legend>
           <p class="hint">Set how much each part of the score counts. Each slider counts as its share of the four, shown on the right. <span id="weights-now"></span></p>
           <div class="weights" id="weight-controls"></div>
           <p class="hint">Weights only re-rank stories that were written. Each day the published rule decides which stories get written, before your settings apply. A story it dropped has no summary, so no weight can bring it back.</p>
         </fieldset>
         <fieldset>
-          <legend>Categories</legend>
-          <p class="hint">Every story has one category. Leave all unchecked to see everything.</p>
-          <div class="options cats" id="topics"></div>
-        </fieldset>
-        <fieldset>
-          <legend>Show</legend>
-          <div class="options stacked">
-            <label for="official"><input type="checkbox" id="official" name="official"> Government records and statements no outlet covered</label>
-            <label for="blindspots"><input type="checkbox" id="blindspots" name="blindspots"> Stories only one side ran</label>
-            <label for="statements"><input type="checkbox" id="statements" name="statements"> Government statements, like press releases</label>
-            <label for="headlines-only"><input type="checkbox" id="headlines-only" name="headlines-only"> Headlines only</label>
-          </div>
-        </fieldset>
-        <fieldset>
           <legend>Sources</legend>
           <p class="hint">Uncheck a source to leave it out. Every story is scored again without it.</p>
           <div class="outlets-grid" id="sources"></div>
         </fieldset>
+        </details>
         <div class="settings-foot">
           <button type="button" id="reset">Reset to defaults</button>
           <button type="button" id="undo-reset" hidden>Undo reset</button>
@@ -306,8 +310,7 @@
       <p class="hint" id="copy-status" role="status"></p>
     </div>
 
-    <div class="sheet prose">
-      <h2>Build a feed by hand</h2>
+    <details class="sheet prose"><summary>Build a feed by hand</summary>
       <p>Every setting is a part of the feed address, so you can write one yourself or share it. Leave out anything you want at its default.</p>
       <div class="table-wrap" tabindex="0" role="region" aria-label="Feed address settings">
         <table class="params">
@@ -317,7 +320,7 @@
       </div>
       <h3>Examples</h3>
       <ul class="examples" id="examples"></ul>
-    </div>
+    </details>
 
     <div class="sheet prose">
       <h2>Run your own copy</h2>
@@ -456,6 +459,12 @@ window.BORING_NEWS = "__DATA__";
 </script>
 <script>
 /*__CORE__*/
+</script>
+<script>
+/*__EVIDENCE__*/
+</script>
+<script>
+/*__SETTINGS__*/
 </script>
 <script>
 /*__APP__*/

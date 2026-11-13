@@ -1,3 +1,39 @@
+@font-face {
+  font-family: 'Literata';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/brand/fonts/literata-400.woff) format('woff');
+}
+@font-face {
+  font-family: 'Literata';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(/brand/fonts/literata-500.woff) format('woff');
+}
+@font-face {
+  font-family: 'Manufacturing Consent';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/brand/fonts/manufacturing-consent.woff) format('woff');
+}
+@font-face {
+  font-family: 'Source Sans 3';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/brand/fonts/source-sans-400.woff) format('woff');
+}
+@font-face {
+  font-family: 'Source Sans 3';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(/brand/fonts/source-sans-600.woff) format('woff');
+}
+
 /*
   The Standard Edition. The rules behind these values are in DESIGN.md: ink on
   white, Literata for reading, blue, gray and red for the three sides, and amber
@@ -512,7 +548,7 @@ th { font-weight: 400; color: var(--muted); font-size: 15px; }
   :root { --gutter: 16px; }
   .front, .sides, .story-top, .also-grid, .lead:has(.plate) { grid-template-columns: minmax(0, 1fr); }
   .lead:has(.plate) { gap: 20px; }
-  .lead .plate { order: -1; }
+  .lead .plate { display: none; }
   .side-col { padding-right: 0; }
 }
 @media (max-width: 600px) {
@@ -539,3 +575,15 @@ th { font-weight: 400; color: var(--muted); font-size: 15px; }
   .sources:not([hidden]) { animation: open 160ms ease-out; }
   @keyframes open { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: none; } }
 }
+
+/* Reader controls reveal precision only when requested. */
+.advanced-settings, .coverage-health, .market-details { border-top: 1px solid var(--line); padding-block: 12px; }
+summary { cursor: pointer; min-height: 44px; padding-block: 10px; font-family: var(--font); }
+.advanced-settings[open] > fieldset { margin-top: 24px; }
+.coverage-health { color: var(--muted); font-size: 15px; }
+.coverage-health p { max-width: 44em; }
+.provenance { color: var(--muted); font: 400 14px/1.5 var(--font); margin-block: 10px; }
+.claim-evidence { margin-block: 12px; border-top: 1px solid var(--line); }
+.claim-evidence blockquote { margin: 8px 0; padding-left: 12px; border-left: 2px solid var(--control); }
+#view-your-feed { column-count: 1; max-width: 760px; margin-inline: auto; }
+.market-details .ticker-inner { padding: 0; }
