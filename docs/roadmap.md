@@ -113,7 +113,7 @@ Goal: a real edition, published every day, that the maintainer would be happy fo
 ### L5. First real edition, read by a person ⬜ M
 
 - **Exists:** the writer, retries, linter and fact check, tested with stand-ins only.
-- **Gaps:** the real Claude call has never run. The model's fact-check call hasn't either. Unknown: real cost per edition (each edition file now records its token totals in `editorial.usage`), whether 2,000 tokens is always enough, how often the fallback writer is used, and how many bullets the fact check wrongly removes.
+- **Gaps:** the real Claude call has never run. The model's fact-check call hasn't either. Unknown: real cost per edition (each edition file now records its token totals in `editorial.usage`), whether 8,000 tokens is always enough (raised from 2,000 on 2026-11-13, because adaptive thinking counts toward the limit), how often the fallback writer is used, and how many bullets the fact check wrongly removes.
 - **Needs a person:** read a full edition against its sources, and judge it. Decision D6.
 - **Done when:** five editions in a row are good enough to publish unedited, and cost per edition is in the ledger.
 

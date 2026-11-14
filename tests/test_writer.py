@@ -134,7 +134,7 @@ def test_story_and_fact_check_calls_use_low_effort_and_room_to_finish():
     w, client = claude((json.dumps(GOOD), "end_turn"), (SUPPORTED, "end_turn"))
     d = write(w)
     assert d.written_by == "claude-test" and d.checks["method"] == "numbers+model"
-    assert [c["max_tokens"] for c in client.calls] == [2000, 2000]
+    assert [c["max_tokens"] for c in client.calls] == [8000, 8000]
     assert all(c["output_config"] == {"effort": "low"} for c in client.calls)
 
 
@@ -262,3 +262,16 @@ def test_writer_url_without_a_model_stops_rather_than_publishing_a_blank_name(mo
     monkeypatch.delenv("BN_WRITER_MODEL", raising=False)
     with pytest.raises(SystemExit, match="BN_WRITER_MODEL"):
         pick_writer(False)
+
+
+@pytest.mark.parametrize('first', [
+    'Sen. Ada Marlow announced her candidacy.',
+    'Democratic Sen. Ada Marlow announced her candidacy.',
+    'Dr. Jane Smith met U.S. officials in Washington, D.C.',
+    'The rate rose to 4.1%.',
+])
+def test_fallback_preserves_abbreviations(first):
+    article = Article('capital-wire', 'https://example.test/a', 'A public announcement',
+                      first + ' Another announcement followed.', '2026-11-13')
+    draft = write_story([article], SOURCES, [], writer=None)
+    assert draft.bullets == [first]
