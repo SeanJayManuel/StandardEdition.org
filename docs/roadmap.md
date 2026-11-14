@@ -62,6 +62,12 @@ Phase numbers match the README. Phase 0 and Trust are new here, and the README's
 
 **The Standard Edition**, at standardedition.org, registered 2026-11-05. The site still says "Standard Edition" until the [design guide](../DESIGN.md) is applied. The site, feeds, docs and MCP server use the name. The GitHub repo, the Python package (`boringnews`) and `BN_` settings keep the old name for now.
 
+## Decided
+
+- **D4, rating services (2026-11-13):** cite AllSides now under its CC BY-NC 4.0 terms, with credit, and email AllSides to confirm a free site counts as non-commercial. Ask Ad Fontes and Media Bias/Fact Check for written permission before citing them.
+- **D6, spending (2026-11-13):** a $10 monthly limit on the Claude API, set in the Anthropic Console. The first live edition cost about $0.04 on Claude Haiku 5.5, so 25 outlets should run near $3 a month.
+- **D9, outlets (2026-11-13):** 14 outlets added, `wsj-world` removed. See T3.
+
 ## Open decisions
 
 These block or shape work, and only the maintainer can make them.
@@ -69,10 +75,7 @@ These block or shape work, and only the maintainer can make them.
 | # | Decision | Affects |
 | --- | --- | --- |
 | D1 | **When to turn the nightly job back on.** It's disabled on GitHub until launch | L1, L2 |
-| D4 | **Which rating services can we cite,** and do their terms allow it? | T2 |
-| D9 | **Which center and right outlets to add,** and whether WSJ's new feed is allowed. See T3 | T3 |
 | D5 | **What does Boring News do on a day the pipeline fails?** Show yesterday's edition with a notice, or nothing? | L8 |
-| D6 | **Monthly spending limit** for the Claude API, and who pays | L5, B1 |
 | D7 | **How much AI writing is disclosed** on each story, beyond the "written by" field in edition files | T5 |
 | D10 | **How to reach readers under censorship.** The goal is set: the same access a US reader has, with everything in their area aggregated. Still open: which routes to run first (mirrors, Tor, email), and what we can honestly promise about their safety | I5, I6 |
 | D11 | **Can anything outside the press and public records affect a story's score?** Recommended: no. Social trends and market odds stay in their own labeled lists. Not urgent while X1 is on hold | X1, X2 |
@@ -105,7 +108,8 @@ Goal: a real edition, published every day, that the maintainer would be happy fo
 
 - **Exists:** `python -m boringnews.pipeline check-feeds`, and tests for the failure paths. Checked live on 2026-11-05: 14 of 16 sources work.
 - **Gaps:**
-  - `wsj-world` answers, but its newest item is from January 2025, because the feed moved (T3).
+  - `wsj-world` was removed on 2026-11-13: its newest item was from January 2025. Dow Jones's new feed may be for personal use only.
+  - CBC News (World) was tried on 2026-11-13 and left off: it closes the connection for our user agent, though it answers browsers.
   - `war-department-releases` returns 403 Access Denied to our requests. It may behave differently from GitHub, which is unknown.
   - Each official source's `max_items` cap is a guess.
 - **Done when:** every source reports healthy or is removed, with the reason in the commit.
@@ -200,12 +204,12 @@ So today a three-outlet story on the left is dropped and the same story on the r
 
 - **Exists:** `ratings` support in `sources.yaml`, the averaging rule in `docs/labeling.md`, and the site showing raters.
 - **Gaps:** no outlet has a `ratings` entry. Every label is a hand-set starting assumption.
-- **Needs a person:** decision D4, then research.
+- **Needs a person:** D4 is decided (AllSides first). Open each AllSides link noted in `sources.yaml` in a browser, confirm the label, then move it into `ratings` with the URL and the date checked. The original 10 outlets need the same check. Add Ad Fontes and Media Bias/Fact Check once they give permission.
 - **Done when:** every outlet has cited ratings, and disagreements between raters show on the site.
 
 ### T3. A more balanced source list ⬜ M
 
-- **Exists:** 11 outlets: 4 left, 3 center, 3 right, 1 unrated.
+- **Exists (2026-11-13):** 25 outlets: 8 left, 8 center, 7 right, 2 unrated. Types: 17 national, 4 international, 3 regional, 1 wire. Added: Washington Post, Politico, Axios, LA Times (left); UPI, Christian Science Monitor, NewsNation, Reason, The Oregonian (center); Washington Examiner, The Dispatch, National Review, The Center Square (right); DW (center) and France 24 (unrated) as international. Each passed `check-feeds` that day. Leans follow AllSides as reported by search results; each rating page still needs opening in a browser (AllSides refuses automated requests) before it moves into `ratings` (T2). The LA Times has no AllSides page found, so its lean is hand-set. NewsNation and The Hill have the same owner (T7).
 - **Shortlist (2026-11-05):** UPI (center wire, a new type), NewsNation (center, both raters agree; check whether its owner also owns The Hill), The Oregonian (center regional). Straight Arrow News is the alternative on coverage gain. All have working feeds. AllSides ratings came from search summaries and need checking before citing, and feed terms aren't confirmed.
 - **Balance:** adding only center outlets widens the gap between sides, to left 1.08, center 0.72 and right 1.44 with those three, so pair them with right outlets. The only non-national right option found is The Center Square, rated by AllSides only.
 - **WSJ:** the feed moved to `feeds.content.dowjones.io` and works, but Dow Jones's terms may limit RSS to personal use. That needs a yes or no before using it.
