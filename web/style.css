@@ -426,6 +426,7 @@ th { font-weight: 400; color: var(--muted); font-size: 15px; }
 .notices { display: grid; gap: 8px; }
 .notices:empty { display: none; }
 .notice { font-size: 15px; margin: 0; padding: 10px 14px; background: var(--sheet); }
+.notice-stale { border-left: 3px solid var(--ink); }
 .closing { text-align: center; }
 .closing:empty { display: none; }
 .front { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 48px; align-items: start; }
