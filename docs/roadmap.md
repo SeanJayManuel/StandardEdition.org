@@ -71,7 +71,6 @@ These block or shape work, and only the maintainer can make them.
 | D1 | **When to turn the nightly job back on.** It's disabled on GitHub until launch | L1, L2 |
 | D4 | **Which rating services can we cite,** and do their terms allow it? | T2 |
 | D9 | **Which center and right outlets to add,** and whether WSJ's new feed is allowed. See T3 | T3 |
-| D5 | **What does Boring News do on a day the pipeline fails?** Show yesterday's edition with a notice, or nothing? | L8 |
 | D6 | **Monthly spending limit** for the Claude API, and who pays | L5, B1 |
 | D7 | **How much AI writing is disclosed** on each story, beyond the "written by" field in edition files | T5 |
 | D10 | **How to reach readers under censorship.** The goal is set: the same access a US reader has, with everything in their area aggregated. Still open: which routes to run first (mirrors, Tor, email), and what we can honestly promise about their safety | I5, I6 |
@@ -134,7 +133,8 @@ Goal: a real edition, published every day, that the maintainer would be happy fo
 
 - **Exists:** source and ticker problems are printed in the workflow log.
 - **Built (2026-11-05):** Today says when an edition is two or more days old, when feeds couldn't be read and when a story was corrected.
-- **Gaps:** nobody is told when a run fails or half the sources go quiet. Decision D5.
+- **Decided (2026-11-13, D5):** on a day the pipeline fails, the last good edition stays up, with a "This edition is out of date" banner above the stories.
+- **Gaps:** nobody is told when a run fails or half the sources go quiet.
 - **Done when:** a failed or thin run sends the maintainer an alert.
 
 ### L9. Launch legal check 🟡 S
