@@ -61,12 +61,12 @@ Every edition is also saved in full to [`archive/`](archive/): every article rea
 
 Standard Edition is meant to be useful to anyone covering a beat, including student papers, community newsletters and freelancers without a wire subscription.
 
-- **Now:** a Research tab to look up which outlets covered a claim and search 30 days of government records; RSS for any combination of settings; full edition files in `archive/`; and a free [public API and MCP server](docs/api.md), with no accounts or keys (ready, but not deployed yet).
+- **Now:** a Research tab to look up which outlets covered a claim and search 30 days of government records; RSS for any combination of settings; full edition files in `archive/`; and a free [public API and MCP server](docs/api.md), with no accounts or keys.
 - **Planned:** per-state and per-city feeds including council and board agendas.
 
 ## Roadmap
 
-United States first. International coverage starts only once US coverage is solid. The feature-by-feature plan, with what's missing for each, is in [`docs/roadmap.md`](docs/roadmap.md).
+United States first. International coverage starts only once US coverage is solid. The [roadmap](docs/roadmap.md) lists what's being worked on now and what comes next. The [planning notes](docs/planning.md) have the detail for each feature.
 
 **Phase 1: National edition** (built)
 - [x] Read outlet RSS feeds across left, center and right
@@ -81,7 +81,8 @@ United States first. International coverage starts only once US coverage is soli
 - [x] Adjust the rubric weights themselves, not just the threshold
 - [x] Save and share settings as a "feed recipe"
 - [x] See every story your settings hide, and why
-- [ ] Blind-spot view: stories covered heavily by one side and barely by the other
+- [x] Stories only one side covered, in their own list
+- [ ] A blind-spot page with its own feed
 
 **Phase 3: Federal records** (partly built)
 - [x] Congress, public laws, Federal Register rules, presidential documents
@@ -97,7 +98,7 @@ United States first. International coverage starts only once US coverage is soli
 - [ ] Expand state by state until US coverage is solid
 
 **Phase 5: Open data**
-- [x] Public API, MCP server and data downloads for journalists and researchers (built, not deployed)
+- [x] Public API, MCP server and data downloads for journalists and researchers
 
 **Phase 6: Open books**
 - [x] Public ledger from day one
