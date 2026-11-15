@@ -1,107 +1,176 @@
 # Roadmap
 
-The detailed plan behind the summary in the [README](../README.md). Each feature has a stable ID so it can be worked through one at a time: what it is, what already exists, what's missing, what it needs from a person, and how we'll know it's done.
+What The Standard Edition is building, in what order, and why. The [README](../README.md) has the short version. This page has the detail.
 
-Original launch assessment: 2026-11-05. Contributor/tooling and grouping descriptions updated 2026-11-12; live launch milestones still require operational evidence.
+Last reviewed: 2026-11-15. Changes to this page are listed in the [change log](#change-log).
 
-**Status:** ✅ built · 🟡 partly built · ⬜ not started
-**Size:** S (under a day) · M (a few days) · L (a week or more)
+## How to read this page
+
+- **This is a plan, not a promise.** There are no dates. Work is sorted into [Now, Next and Later](#now-next-and-later), and only Now is being worked on.
+- **Every item has a stable ID** (L5, T3, R1), so issues and pull requests can point at it. IDs are never reused.
+- **Every item says what "done" means.** An item isn't done because code merged. It's done when its "Done when" line is true.
+- **Items marked "Needs a person" can't be finished by code alone.** They wait on a decision, an account, or someone reading real editions.
+
+| Status | Meaning |
+| --- | --- |
+| ✅ | Built, and its "Done when" line is true |
+| 🟡 | Partly built. The item says what's missing |
+| ⬜ | Not started |
+
+| Size | Meaning |
+| --- | --- |
+| S | Under a day |
+| M | A few days |
+| L | A week or more |
+
+**To propose a change,** open an issue. Large features, new coverage areas and changes to editorial rules are discussed in an issue before any code, as [governance](governance.md) describes. An accepted proposal gets an ID here.
 
 ## Where things stand
 
-The product is built but has never been published.
+The site is live at [standardedition.org](https://standardedition.org). It isn't publishing every day yet.
 
-- `archive/` holds no editions, and the nightly workflow has never run.
-- Claude writing has only been tested with stand-ins. Feeds and grouping have had one local check on real news (see below).
-- The domain is registered (standardedition.org, through Cloudflare), but the site isn't deployed and no repo secrets are set.
-- Grouping and ranking are still set from invented sample data.
+- **One real edition is published,** for 2026-11-13. It has 22 stories, all written and fact-checked by Claude Haiku 5.5, for about $0.04. It was published by hand.
+- **The nightly job is still off** (decision D1). It needs four repository secrets that aren't set: `ANTHROPIC_API_KEY`, `CONGRESS_API_KEY`, `FRED_API_KEY` and `CLOUDFLARE_API_TOKEN`. `CLOUDFLARE_ACCOUNT_ID` is set.
+- **The first edition isn't in the repository.** `archive/` is empty, so the first nightly run would rebuild the site without it (L13).
+- **The source list has 25 outlets:** 8 left, 8 center, 7 right and 2 unrated. Every lean is still a hand-set starting label (T2).
+- **Dated pages, custom feeds, the public API and the MCP server are deployed** and answer on the live domain.
+- **Only one day of real news has been checked by hand** for grouping (L6). The [first check](#appendix-first-check-on-real-news-2026-11-05) is at the end of this page.
 
-So everything below is ordered around one question: **does this work on real news?** Phase 0 answers that. Until it does, later features would be built on untested assumptions.
+## Direction
 
-## First check on real news (2026-11-05)
+The goal is a free, open-source alternative to paid coverage-comparison services such as Ground News: for any story, who covered it, who didn't, and how each side reported it.
 
-One local run on the live feeds, with no model and nothing published. It's a single day just after the midterms, and without a Congress key, so government records are undercounted. Local runs also stored feed times 8 hours late until a bug was fixed afterward, so the window was slightly off. A recount of the one-sided stories with a true 36-hour window matched.
+Those services are ahead on scale, freshness and reach. They read thousands of outlets, update through the day, and have apps and ratings for ownership and reliability. The Standard Edition is ahead on things that are hard to copy: it's free, every rule is public, each claim in a summary shows the source sentence behind it, government records sit beside the coverage, and readers can change the ranking.
 
-| Measure | Result |
-| --- | --- |
-| Articles in the 36-hour window | 234 |
-| Groups, at similarity 0.15 | 192 |
-| Groups with 2 or more outlets | 15 |
-| Stories that would be written | 14 before fixing reposted laws, 10 after |
-| Stories in the main list at the standard threshold | 9 |
-| Stories covered by left, center and right | **1** |
+So the plan is to close the first gap without giving up the second:
 
-What this showed:
+1. **Publish reliably.** A daily edition that never goes stale comes before any new feature.
+2. **Get fresher.** Two editions a day first, then more if they hold up.
+3. **Read more outlets, with cited labels.** 25 outlets now, 100 or more next, each with a published rating behind its label.
+4. **Match the features readers expect:** who owns each outlet, a blind-spot page, a site that installs like an app.
+5. **Widen coverage last:** more federal records, then state and local, then other countries.
 
-- **Three-sided coverage is rare, partly because of the list.** The WSJ feed moved, leaving The Hill and the BBC as the only working center outlets (L4, T3). The strict setting would show almost nothing.
-- **Grouping publishes wrong merges (D4).** A test on 232 hand-labeled articles found 4 groups that would have published a wrong story, including the day's only three-sided story, which merged separate events. Better grouping mostly prevents those. It doesn't find many more matches, so it won't raise three-sided coverage by itself.
-- **One-sided stories are being lost (T1).** All six one-lean stories were dropped at the current setting. Four of them had 2 or more rated outlets on one side.
-- **Feeds are shallow.** One fetch reached back 1.6 hours for the NY Post and 4.2 for The Hill, against 131 for the Guardian. A once-a-day fetch can make a story look one-sided when it isn't, and it tilts against center and right.
-- **Sports reached the edition.** Decided: no sports for now. `docs/ranking.md` has the rule, and each edition file lists what it left out.
-- **Reposted laws looked new.** GovInfo reposted old laws with fresh dates, so 2021 laws appeared as today's records, and it was weeks behind on real ones. Fixed by F7.
+### What changed on 2026-11-15
 
-With the Congress key added, the same check found no bills with a significant action in the window, so records didn't change the result that day. Congress was just past an election, so this needs a week in session to judge. A rerun later that day gave 8 stories rather than 10, because the feeds had moved on, so treat these counts as rough.
+The maintainer relaxed one principle and confirmed the rest.
 
-## Order of work
+- **Changed:** "once a day" becomes "a few fixed editions a day". The README and the site still say once a day, and they change in the same pull request that ships a second edition (L12).
+- **Open:** an email edition would mean storing readers' addresses, which bends "no accounts". That's decision D12.
+- **Not changing:** free, no ads, no tracking, public rules, open books, and no engagement numbers deciding what readers see.
 
-| Order | Phase | Why here |
+### Not planned
+
+These are out of scope. Listing them keeps proposals focused.
+
+- **A live feed, infinite scroll or push alerts for breaking news.** Editions are fixed and finite.
+- **Reader accounts, profiles or reading history on our servers.** Settings stay in the browser and the feed address.
+- **Ads, sponsorships, paid tiers or affiliate links.**
+- **Original reporting or fact-check verdicts.** The site shows who reported what. It doesn't rule on what's true.
+- **Ranking by popularity.** Clicks, shares and social trends never affect a story's score (D11).
+- **Native iOS and Android apps.** An installable site (R8) comes first. This can be revisited once someone offers to maintain an app.
+- **Sports,** for now. `docs/ranking.md` has the rule.
+
+## Now, Next and Later
+
+**Now** is being worked on. **Next** is agreed and waiting for Now. **Later** is intended, but its shape may change before it starts.
+
+### Now: publish every day
+
+| ID | Item | Status | Size | Waiting on |
+| --- | --- | --- | --- | --- |
+| [L1](#l1-accounts-hosting-and-secrets--s) | Add the four missing secrets | 🟡 | S | Maintainer |
+| [L13](#l13-put-the-first-edition-in-the-archive--s) | Put the first edition in the archive | ⬜ | S | |
+| [L2](#l2-safe-nightly-job--s) | Turn the nightly job on (D1) | 🟡 | S | L1, L13 |
+| [L8](#l8-failure-handling-and-alerts--s) | Alert the maintainer when a run fails | 🟡 | S | |
+| [L12](#l12-two-editions-a-day--m) | Two editions a day | ⬜ | M | L2 |
+| [L5](#l5-real-editions-read-by-a-person--m) | Five editions in a row read against their sources | 🟡 | M | L2, maintainer |
+| [L6](#l6-tune-grouping-and-ranking-on-real-news--m) | A week of grouping checked by hand | 🟡 | M | L2, maintainer |
+| [T2](#t2-cited-ratings-for-every-outlet--m) | A cited rating for each of the 25 outlets | ⬜ | M | Maintainer |
+| [L9](#l9-launch-legal-check--s) | Read each outlet's feed terms | 🟡 | S | Maintainer |
+| [L7](#l7-market-ticker-permissions--s) | Check the market ticker's permissions | ⬜ | S | Maintainer |
+
+### Next: close the gap
+
+| ID | Item | Status | Size | Waiting on |
+| --- | --- | --- | --- | --- |
+| [T3](#t3-a-larger-balanced-source-list--m) | Grow the source list to 100 or more outlets | 🟡 | M | T2, L6 |
+| [T8](#t8-who-owns-each-outlet--m) | Who owns each outlet | ⬜ | M | |
+| [T7](#t7-independent-agreement--m) | Repeats and shared owners count once in the score | 🟡 | M | T8 |
+| [R1](#r1-blind-spot-page-and-feed--m) | A blind-spot page with its own feed | 🟡 | M | L12 |
+| [R8](#r8-a-site-that-installs-like-an-app--s) | A site that installs like an app | ⬜ | S | |
+| [R9](#r9-email-edition--m) | Email edition | ⬜ | M | D12 |
+| [T5](#t5-checkable-summaries--m) | Show what a summary left out | 🟡 | M | D7 |
+| [T6](#t6-grouping-audit-view--m) | Show everything read that day and what happened to it | ⬜ | M | |
+| [T4](#t4-a-public-way-to-challenge-decisions--s) | A way to challenge decisions without a GitHub account | 🟡 | S | |
+| [R6](#r6-past-editions--m) | A date picker for past editions | 🟡 | M | |
+| [O2](#o2-public-api-and-mcp-server--m) | Rate limit for the API and MCP server | 🟡 | S | |
+
+### Later: widen coverage
+
+| Area | Items | Starts when |
 | --- | --- | --- |
-| 1 | **0. Launch** | Nothing else counts until a real edition exists |
-| 2 | **Trust: labels and selection** | The labels and the rule that drops stories are what critics will test first |
-| 3 | **2. Reader control** | The core of the thesis, and much of it is small now |
-| 4 | **3. Federal records** | Extends a working system |
-| 5 | **6. Open books** | Costs become real at launch, so the ledger comes early. Donations wait |
-| 6 | **4. State and local** | The biggest job. Start once the national edition is reliable |
-| 7 | **5. Open data** | Most useful once there's a history to download |
-| Later | **Beyond the US** | Only once US coverage is solid |
-| Later | **Signals beyond the press** | Only once the edition is trusted, and it depends on D11. Social trends (X1) are on hold |
+| [Federal records](#phase-3-federal-records) | F1 to F5, F8 to F11 | The daily edition is reliable |
+| [State and local](#phase-4-state-and-local) | S1 to S7 | The national edition is trusted. S1 is research and can start earlier |
+| [Open data](#phase-5-open-data) | O3 | There are months of history to search |
+| [Open books](#phase-6-open-books) | B2 | Costs are real and recurring |
+| [Beyond the US](#later-beyond-the-us) | I1 to I6 | US coverage is solid |
+| [Signals beyond the press](#later-signals-beyond-the-press) | X1 (on hold), X2 | The edition is trusted, and D11 is decided |
 
-Phase numbers match the README. Phase 0 and Trust are new here, and the README's Phase 1 (the national edition) is built, so it isn't repeated.
+## Decisions
 
-## Name
+Only the maintainer can make these.
 
-**The Standard Edition**, at standardedition.org, registered 2026-11-05. The site still says "Standard Edition" until the [design guide](../DESIGN.md) is applied. The site, feeds, docs and MCP server use the name. The GitHub repo, the Python package (`boringnews`) and `BN_` settings keep the old name for now.
-
-## Decided
-
-- **D4, rating services (2026-11-13):** cite AllSides now under its CC BY-NC 4.0 terms, with credit, and email AllSides to confirm a free site counts as non-commercial. Ask Ad Fontes and Media Bias/Fact Check for written permission before citing them.
-- **D6, spending (2026-11-13):** a $10 monthly limit on the Claude API, set in the Anthropic Console. The first live edition cost about $0.04 on Claude Haiku 5.5, so 25 outlets should run near $3 a month.
-- **D9, outlets (2026-11-13):** 14 outlets added, `wsj-world` removed. See T3.
-
-## Open decisions
-
-These block or shape work, and only the maintainer can make them.
+### Open
 
 | # | Decision | Affects |
 | --- | --- | --- |
-| D1 | **When to turn the nightly job back on.** It's disabled on GitHub until launch | L1, L2 |
+| D1 | **When to turn the nightly job on.** Agreed in principle on 2026-11-15. It waits on the secrets (L1) and the archive (L13) | L2 |
 | D7 | **How much AI writing is disclosed** on each story, beyond the "written by" field in edition files | T5 |
-| D10 | **How to reach readers under censorship.** The goal is set: the same access a US reader has, with everything in their area aggregated. Still open: which routes to run first (mirrors, Tor, email), and what we can honestly promise about their safety | I5, I6 |
-| D11 | **Can anything outside the press and public records affect a story's score?** Recommended: no. Social trends and market odds stay in their own labeled lists. Not urgent while X1 is on hold | X1, X2 |
+| D10 | **How to reach readers under censorship.** The goal is set: the same access a US reader has. Still open: which routes to run first (mirrors, Tor, email), and what we can honestly promise about their safety | I5, I6 |
+| D11 | **Can anything outside the press and public records affect a story's score?** Recommended: no. Not urgent while X1 is on hold | X1, X2 |
+| D12 | **Can the project store email addresses** to send an edition by email? It's the first reader data the project would hold | R9 |
+| D13 | **Can a reliability rating sit beside the lean label?** Commercial services show one. Every rating of this kind is contested, and the services' terms need checking | T2 |
+
+### Decided
+
+| # | Date | Decision |
+| --- | --- | --- |
+| D4 | 2026-11-13 | **Rating services.** Cite AllSides now under its CC BY-NC 4.0 terms, with credit, and email AllSides to confirm a free site counts as non-commercial. Ask Ad Fontes and Media Bias/Fact Check for written permission before citing them |
+| D5 | 2026-11-13 | **A failed day.** The last good edition stays up, with a "This edition is out of date" banner |
+| D6 | 2026-11-13 | **Spending.** A $10 monthly limit on the Claude API, set in the Anthropic Console |
+| D9 | 2026-11-13 | **Outlets.** 14 added, `wsj-world` removed. See T3 |
+| D14 | 2026-11-15 | **Editions a day.** Two to begin with, then more if they hold up. See L12 |
+| D15 | 2026-11-15 | **Direction.** Compete with paid coverage-comparison services as a free, open-source alternative. See [Direction](#direction) |
+
+The numbers D2, D3 and D8 aren't in use.
+
+## Name
+
+**The Standard Edition**, at standardedition.org, registered 2026-11-05. The site, feeds, docs and MCP server use the name. The Python package (`boringnews`) and `BN_` settings keep the old name for now.
 
 ---
 
 ## Phase 0: Launch
 
-Goal: a real edition, published every day, that the maintainer would be happy for a stranger to read.
+Goal: a real edition, published on schedule every day, that the maintainer would be happy for a stranger to read.
 
-### L1. Accounts, hosting and secrets ⬜ S
+### L1. Accounts, hosting and secrets 🟡 S
 
-- **Exists:** the nightly workflow and Cloudflare deploy step.
-- **Gaps:** no Cloudflare project or repo secrets. The domain is registered. The workflow expects `ANTHROPIC_API_KEY`, `CONGRESS_API_KEY`, `FRED_API_KEY`, `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
-- **Needs a person:** create the accounts, add the secrets. Decision D1.
-- **Done when:** the workflow deploys a page to the domain.
+- **Built:** the Cloudflare Pages project, the domain, and the nightly workflow's deploy step. The site is live.
+- **Gaps:** four repository secrets aren't set: `ANTHROPIC_API_KEY`, `CONGRESS_API_KEY`, `FRED_API_KEY` and `CLOUDFLARE_API_TOKEN`. `CLOUDFLARE_ACCOUNT_ID` is set (checked 2026-11-15).
+- **Needs a person:** create the keys and add them in the repository's Actions secrets. Never paste a key into an issue, a pull request or a chat.
+- **Done when:** a manual run of the nightly workflow builds and deploys an edition.
 
-### L2. Safe nightly job ✅ S
+### L2. Safe nightly job 🟡 S
 
-- **Built:** tests run before the build, so failing tests stop a deploy. `pipeline run --require-writer`, used by the nightly job, stops before writing anything when a required key is missing, and stops before storing when every story fell back, which catches a bad key or an outage.
-- **Limit:** with no secrets set, the nightly job fails every day until launch. A partial outage, where only some stories fall back, still publishes; those stories show their writer in the edition file.
+- **Built:** tests run before the build, so failing tests stop a deploy. `pipeline run --require-writer`, used by the nightly job, stops before writing anything when a required key is missing, and stops before storing when every story fell back, which catches a bad key or an outage. Saving the archive and deploying are separate jobs, and a saved edition can be redeployed without rebuilding it.
+- **Gaps:** the workflow is disabled on GitHub and has never completed a run (D1). The archive job pushes straight to `main`, so branch protection has to allow for it.
+- **Limit:** a partial outage, where only some stories fall back, still publishes. Those stories show their writer in the edition file.
+- **Done when:** the workflow is enabled, a manual run succeeds, and the next scheduled run publishes by itself.
 
-### L3. Tests on pull requests 🟡 S
+### L3. Tests on pull requests ✅ S
 
-- **Exists:** `.github/workflows/tests.yml`, on Python 3.12 and Node 22, with read-only permissions and no secrets.
-- **Gaps:** the updated locked-dependency checks still need a passing GitHub Actions run; local validation is not hosted CI evidence.
-- **Done when:** it has passed on a real pull request.
+- **Built:** `.github/workflows/tests.yml`, on Python 3.12 and Node 22, with read-only permissions and no secrets. A second job rehearses recovering a publication from its archive. Both have passed on real pull requests since 2026-11-13.
 
 ### L4. Verify every live source 🟡 S
 
@@ -113,17 +182,17 @@ Goal: a real edition, published every day, that the maintainer would be happy fo
   - Each official source's `max_items` cap is a guess.
 - **Done when:** every source reports healthy or is removed, with the reason in the commit.
 
-### L5. First real edition, read by a person ⬜ M
+### L5. Real editions, read by a person 🟡 M
 
-- **Exists:** the writer, retries, linter and fact check, tested with stand-ins only.
-- **Gaps:** the real Claude call has never run. The model's fact-check call hasn't either. Unknown: real cost per edition (each edition file now records its token totals in `editorial.usage`), whether 8,000 tokens is always enough (raised from 2,000 on 2026-11-13, because adaptive thinking counts toward the limit), how often the fallback writer is used, and how many bullets the fact check wrongly removes.
-- **Needs a person:** read a full edition against its sources, and judge it. Decision D6.
+- **Built:** the writer, retries, linter and fact check. The first live edition (2026-11-13) had 22 stories, all written and checked by Claude Haiku 5.5, for about $0.04.
+- **Gaps:** one edition isn't a pattern. Still unknown: whether 8,000 tokens is always enough (raised from 2,000 on 2026-11-13, because adaptive thinking counts toward the limit), how often the fallback writer is used, how many bullets the fact check wrongly removes, and what an edition costs with 25 outlets. PR #9 estimated about $0.08.
+- **Needs a person:** read each full edition against its sources, and judge it.
 - **Done when:** five editions in a row are good enough to publish unedited, and cost per edition is in the ledger.
 
 ### L6. Tune grouping and ranking on real news 🟡 M
 
 - **Exists:** grouping by embeddings and shared names, with a word-based fallback (`docs/clustering.md`). Hand-labeled on one day: 0 wrong published groups, down from 4. Edition files record every grouping and the method used.
-- **Gaps:** one day has been measured (see above), and it needs a normal news week. Rubric thresholds are uncalibrated: on that day only about 10 stories would be written, and only 1 reached all three sides. This doesn't need a model, so it can run locally.
+- **Gaps:** one day has been measured (see the [appendix](#appendix-first-check-on-real-news-2026-11-05)), and it needs a normal news week. Rubric thresholds are uncalibrated: on that day only about 10 stories would be written, and only 1 reached all three sides. This doesn't need a model, so it can run locally.
 - **Done when:** a week of real editions is hand-checked for wrongly merged or split stories, the settings are updated, and `docs/clustering.md` and `docs/ranking.md` record the result.
 
 ### L7. Market ticker permissions ⬜ S
@@ -133,12 +202,12 @@ Goal: a real edition, published every day, that the maintainer would be happy fo
 - **Needs a person:** check the terms, then keep, replace or remove those series.
 - **Done when:** every series on the ticker has been checked.
 
-### L8. Failure handling and alerts ⬜ S
+### L8. Failure handling and alerts 🟡 S
 
 - **Exists:** source and ticker problems are printed in the workflow log.
 - **Built (2026-11-05):** Today says when an edition is two or more days old, when feeds couldn't be read and when a story was corrected.
 - **Decided (2026-11-13, D5):** on a day the pipeline fails, the last good edition stays up, with a "This edition is out of date" banner above the stories.
-- **Gaps:** nobody is told when a run fails or half the sources go quiet.
+- **Gaps:** nobody is told when a run fails or half the sources go quiet. This matters more once the job runs unattended, and twice a day (L12).
 - **Done when:** a failed or thin run sends the maintainer an alert.
 
 ### L9. Launch legal check 🟡 S
@@ -165,6 +234,23 @@ A new About tab: why this exists, in plain language, for someone who has never h
 - **Gaps:** the legal form. A private contact address (L9). The FAQ should answer the hard questions directly: Is this written by AI? Who pays for it? Are you biased? Why is this outlet labeled that way? Why was a story left out? How do I challenge a decision? Does this tell me what's true? Some answers depend on D6 and D7.
 - **Needs a person:** the words on why it exists. The page names Sean Manuel once, under who runs it, and nowhere else. "Organization, not a company" should only appear once the legal form is settled. A `.org` address doesn't show that by itself.
 - **Done when:** the tab is live, every FAQ answer links to its evidence (ledger, source list, code), and an outside reader can explain the project after reading it.
+
+### L12. Two editions a day ⬜ M
+
+Decided on 2026-11-15 (D14): two editions a day to begin with, then more if they hold up.
+
+- **Exists:** one scheduled run a day, at 11:17 UTC. An edition is named by its date alone.
+- **Gaps:** a second run on the same date replaces the first. Story numbers come from a story's position that day, so a rerun can change a story's link and rewrite its text. That breaks the rule that published text and IDs are kept. This needs a design first: either each edition gets its own name (date and time of day), or the second run adds to the first and keeps every story already published. The archive, dated pages, feeds, the API, story threads and the out-of-date banner all assume one edition a day.
+- **Also gained:** reading feeds twice a day reaches further back on shallow feeds, which is the open part of T1.
+- **Cost:** about twice the model spending. At the PR #9 estimate of $0.08 an edition, two a day is about $5 a month, inside the $10 limit (D6).
+- **Same change:** the README's principle 7 and the site's "once a day" wording, and a record of the design in `docs/decisions/`.
+- **Done when:** two editions publish each day for a week, no published story changes its link or its text, and the site says when the next edition is due.
+
+### L13. Put the first edition in the archive ⬜ S
+
+- **Exists:** the 2026-11-13 edition file, on the live site at `/archive/2026-11-13.json`.
+- **Gaps:** `archive/` in the repository is empty. The nightly job rebuilds its database from that folder, so the first run would drop the 2026-11-13 pages from the site and couldn't link new stories to earlier days.
+- **Done when:** the file is committed to `archive/`, and `python -m boringnews.archive restore` rebuilds that edition from it.
 
 ---
 
@@ -197,7 +283,7 @@ So today a three-outlet story on the left is dropped and the same story on the r
   - **D, balance the list:** adds nothing by itself, and adding outlets can unwrite stories through reweighting.
 - **Conditions for A:** word labels as a fact about our list ("Among the outlets we read, only right outlets ran this"), withhold them if any side's feeds failed that day, and fetch more than once a day. Decide what happens if a reader's weights lift one into the main list.
 - **Built (2026-11-05, option A, rubric v0.5):** the blind-spot lane, wording as a fact about our list, no claim when a feed on a missing side failed, and a reader setting (`blindspots=0`). With the new grouping, the one tested day has 7 blind spots: 5 left, 2 right.
-- **Still open:** fetching more than once a day, so shallow feeds don't make stories look one-sided. It needs somewhere to keep articles between runs, so it belongs with deployment.
+- **Still open:** fetching more than once a day, so shallow feeds don't make stories look one-sided. Two editions a day (L12) does this.
 - **Done when:** fetching is fixed, and the labels hold up on a normal week.
 
 ### T2. Cited ratings for every outlet ⬜ M
@@ -207,15 +293,17 @@ So today a three-outlet story on the left is dropped and the same story on the r
 - **Needs a person:** D4 is decided (AllSides first). Open each AllSides link noted in `sources.yaml` in a browser, confirm the label, then move it into `ratings` with the URL and the date checked. The original 10 outlets need the same check. Add Ad Fontes and Media Bias/Fact Check once they give permission.
 - **Done when:** every outlet has cited ratings, and disagreements between raters show on the site.
 
-### T3. A more balanced source list ⬜ M
+### T3. A larger, balanced source list 🟡 M
 
 - **Exists (2026-11-13):** 25 outlets: 8 left, 8 center, 7 right, 2 unrated. Types: 17 national, 4 international, 3 regional, 1 wire. Added: Washington Post, Politico, Axios, LA Times (left); UPI, Christian Science Monitor, NewsNation, Reason, The Oregonian (center); Washington Examiner, The Dispatch, National Review, The Center Square (right); DW (center) and France 24 (unrated) as international. Each passed `check-feeds` that day. Leans follow AllSides as reported by search results; each rating page still needs opening in a browser (AllSides refuses automated requests) before it moves into `ratings` (T2). The LA Times has no AllSides page found, so its lean is hand-set. NewsNation and The Hill have the same owner (T7).
 - **Shortlist (2026-11-05):** UPI (center wire, a new type), NewsNation (center, both raters agree; check whether its owner also owns The Hill), The Oregonian (center regional). Straight Arrow News is the alternative on coverage gain. All have working feeds. AllSides ratings came from search summaries and need checking before citing, and feed terms aren't confirmed.
 - **Balance:** adding only center outlets widens the gap between sides, to left 1.08, center 0.72 and right 1.44 with those three, so pair them with right outlets. The only non-national right option found is The Center Square, rated by AllSides only.
 - **WSJ:** the feed moved to `feeds.content.dowjones.io` and works, but Dow Jones's terms may limit RSS to personal use. That needs a yes or no before using it.
 - **Ratings:** Ad Fontes labels aren't in `RATING_SCALE`, and its "Middle" spans -5.30 to +5.50, so T2 needs a mapping rule first.
-- **Gaps:** two working center outlets. Left and right outlets are all national. The BBC is the only international outlet with a lean, and no outlet is typed regional or wire, partly because Reuters and AP don't offer public feeds. So the diversity part of the score can't reach its maximum on any story that only left and right outlets cover.
-- **Done when:** each side has a mix of outlet types, and each addition follows the process in `docs/labeling.md`.
+- **Gaps:** the right has 7 outlets against 8 on the left and in the center, and only one wire service is read, because Reuters and AP don't offer public feeds.
+- **Next step (2026-11-15):** grow to 100 or more outlets, in batches of 20 to 30. Each batch needs a cited rating for every outlet (T2), a feed check, and a before-and-after comparison like the one in PR #9. Hold a batch if grouping gets worse (L6). Regional outlets come first, because every side is short of them.
+- **Limits on growth:** grouping hasn't been checked at this volume, model cost rises with the number of stories, and each outlet's feed terms need reading (L9). Thousands of outlets isn't the aim: a few hundred with cited labels says more than thousands without.
+- **Done when:** the list has 100 or more outlets, each side has national, regional and international outlets, every label is cited, and each addition follows the process in `docs/labeling.md`.
 
 ### T4. A public way to challenge decisions 🟡 S
 
@@ -223,11 +311,11 @@ So today a three-outlet story on the left is dropped and the same story on the r
 - **Gaps:** the `source`, `label`, `correction` and `rubric` labels need creating on GitHub. Filing an issue needs a GitHub account. No written review schedule beyond "quarterly".
 - **Done when:** the labels exist and there's a written review schedule, and readers without a GitHub account have a way in. This is the first practical step on the open question about becoming a gatekeeper.
 
-### T5. Checkable summaries ⬜ M
+### T5. Checkable summaries 🟡 M
 
-- **Exists:** the number check, the model check, a log of removed bullets, and original headlines shown under each story.
-- **Gaps:** a reader can't see which source supports which bullet. Nothing shows what was left out. Decision D7.
-- **Done when:** each bullet can be traced to its source. This addresses the open question "summaries are choices too".
+- **Built:** the number check, the model check, a log of removed bullets, and original headlines under each story. Since 2026-11-12, each claim in a summary lists the outlets that support it, with the sentence quoted from each.
+- **Gaps:** nothing shows what a summary left out. Decision D7.
+- **Done when:** a reader can see what the sources said that the summary didn't. This addresses the open question "summaries are choices too".
 
 ### T6. Grouping audit view ⬜ M
 
@@ -241,8 +329,17 @@ The thesis rests on sources agreeing independently, so agreement should only cou
 
 - **Exists:** a fact is stated plainly when two outlets agree, and the outlets' leans are counted across the spectrum.
 - **Built (2026-11-05):** `boringnews/reposts.py` finds articles that repeat another outlet's report. The story page says so, each edition file records it, and the writer is told a repeat isn't a second source.
-- **Gaps:** repeats still count toward a story's score, because changing that is a rubric change. Detection only compares headlines and feed snippets, and it hasn't been measured on real wire copy. Outlets with the same owner still count separately.
-- **Done when:** a fact repeated from one wire report counts as one source in the score too.
+- **Gaps:** repeats still count toward a story's score, because changing that is a rubric change. Detection only compares headlines and feed snippets, and it hasn't been measured on real wire copy. Outlets with the same owner still count separately: The Hill and NewsNation are both owned by Nexstar. That needs ownership data (T8).
+- **Done when:** a fact repeated from one wire report counts as one source in the score, and so do two outlets with one owner.
+
+### T8. Who owns each outlet ⬜ M
+
+Readers of commercial comparison sites can see who owns an outlet. It also fixes a gap here: two outlets with one owner aren't two independent sources (T7).
+
+- **Exists:** nothing. `sources.yaml` has no owner field.
+- **Gaps:** an `owner` field for each outlet, with a source and the date checked, as labels have. Wikidata publishes ownership under an open license and is the likely first source, but its entries need checking by hand. Then the Outlets tab and each story page can show the owner, and a story can say when its outlets share one.
+- **Rule:** ownership is shown as a fact with its source. It never changes an outlet's lean label.
+- **Done when:** every outlet shows its owner and where that came from, and a story says when two of its outlets share an owner.
 
 ---
 
@@ -250,13 +347,13 @@ The thesis rests on sources agreeing independently, so agreement should only cou
 
 Goal: "the reader owns the algorithm" is true in practice, not just for four switches.
 
-### R1. Blind-spot view ⬜ M
+### R1. Blind-spot page and feed 🟡 M
 
-Stories covered heavily by one side and barely by the other.
+Stories that one side covered and the others didn't.
 
-- **Exists:** each story's outlets and leans, in the page data. The Outlets tab shows what each outlet skipped. Today has an "Only one side covered" list, and every story's scale stripes a side that ran nothing, but that only covers stories that were written.
-- **Gaps:** depends on T1, because many of these stories are never written. There's no definition yet of "heavily" and "barely". There's also no history view, though Research holds 30 days.
-- **Done when:** the rule is published, the view is on the site, and it has its own feed.
+- **Built (rubric v0.5):** Today has an "Only one side covered" list. A story with two or more rated outlets on one side and none on the others is written up and kept out of the main list (T1). The wording is a fact about our list, and it's withheld when a missing side's feeds failed. Every story's scale marks a side that ran nothing, and the Outlets tab shows what each outlet skipped.
+- **Gaps:** blind spots have no page or feed of their own, and no history, though Research holds 30 days. There's no rule yet for a story one side covered heavily and another barely. More outlets (T3) and a second daily fetch (L12) should come first, so fewer stories look one-sided by accident.
+- **Done when:** the rule is published, blind spots have their own page and feed, and a reader can look back over past days.
 
 ### R2. Adjustable rubric weights ✅ M
 
@@ -285,13 +382,24 @@ Stories covered heavily by one side and barely by the other.
 - **Rule:** facts and who said them only. No framing comparison, for the same reason we don't highlight words.
 - **Done when:** a person has read a week of them against their sources and found them fair.
 
-### R6. Past editions ⬜ M
+### R6. Past editions 🟡 M
 
-A way to read any earlier day, from a date picker or an archive tab.
+- **Built (2026-11-12):** every edition has its own dated page, and so does every story. They can be read without scripts, and story links keep working after the 30-day research window.
+- **Gaps:** nothing on the page picks a day. A reader has to know the address.
+- **Done when:** a reader can open any published day from the site.
 
-- **Exists:** every edition is saved in `archive/` and published as a data file. The local server takes `?date=YYYY-MM-DD`, but the live site only serves the latest edition. Story links keep working for 30 days through the research file.
-- **Gaps:** a page per day, or one page that loads a day's file, and something to pick the day with. Story links need a date in them to last longer than 30 days. Should wait until there's real history to browse.
-- **Done when:** a reader can open any published day, and a story link keeps working for good.
+### R8. A site that installs like an app ⬜ S
+
+- **Exists:** a static site with its own fonts and no runtime dependencies, which already loads quickly on a phone.
+- **Gaps:** a web app manifest and icons, so a phone or desktop can add the site to its home screen, and a small offline cache so the last edition opens without a connection. No push notifications: they're out of scope.
+- **Done when:** the site can be installed on iOS, Android and desktop, and the last edition opens offline.
+
+### R9. Email edition ⬜ M
+
+- **Exists:** RSS for any combination of settings, which already works in feed readers and many email tools.
+- **Gaps:** sending email means holding readers' addresses. That would be the first reader data the project stores, so it needs decision D12 first. If the answer is yes: sign-up with confirmation, one-click removal, no open or click tracking, a provider whose cost goes in the ledger, and a privacy note in plain language.
+- **Needs a person:** D12.
+- **Done when:** a reader can get each edition by email and leave with one click, and the site says exactly what's stored.
 
 ---
 
@@ -410,24 +518,25 @@ This is the phase with the most unknowns. It should start with a small research 
 
 Goal: journalists and researchers can use the data without asking.
 
-### D1. Downloads ✅ S
+### O1. Downloads ✅ S
 
 - **Built:** `api/v1/` has an index of editions, one file per edition, and monthly zip downloads. See [`api.md`](api.md).
-- **Limit:** no CSV. Not yet deployed.
+- **Limit:** no CSV.
 
-### D2. Public API and MCP server 🟡 M
+### O2. Public API and MCP server 🟡 M
 
 - **Built:** a versioned static JSON API, and a read-only remote MCP server (`functions/mcp.js`) with `get_edition`, `search_coverage`, `search_records` and `list_sources`. No accounts or keys. Documented in [`api.md`](api.md).
-- **Gaps:** no real MCP client has connected, and nothing has run on Cloudflare. There's no rate limit, which the MCP spec requires and which needs a Cloudflare rule on the live domain. The free plan's 100,000 daily requests are shared with `/feed.xml`, so heavy MCP use could stop custom feeds.
-- **Done when:** a real client works against a deployed preview, and a rate limit is in place.
+- **Deployed:** the API and the MCP server answer on the live domain (checked 2026-11-15).
+- **Gaps:** no real MCP client has been tried against it. There's no rate limit, which the MCP spec requires and which needs a Cloudflare rule on the live domain. The free plan's 100,000 daily requests are shared with `/feed.xml`, so heavy MCP use could stop custom feeds.
+- **Done when:** a real client works against the live server, and a rate limit is in place.
 
-### D3. Research beyond 30 days ⬜ M
+### O3. Research beyond 30 days ⬜ M
 
 - **Exists:** coverage lookup and records search over the last 30 days, in the browser.
 - **Gaps:** the index grows with every day, and all of it is downloaded to the page. Longer history needs a different approach. Word matching also misses paraphrased claims. The MCP function's first search on a fresh copy costs far more than the free plan's 10 ms CPU limit, because it parses and tokenizes the whole index, so it needs a smaller or pre-tokenized index.
 - **Done when:** a reader can search the whole archive at a sensible download size.
 
-### D4. Better grouping 🟡 M
+### O4. Better grouping 🟡 M
 
 - **Exists:** sentence embeddings with a shared-name check and average linkage, with a word-based fallback. `BN_EMBEDDING_SIMILARITY` and `BN_WORD_SIMILARITY` configure the two methods.
 - **Tested (2026-11-05):** sentence embeddings with a shared-name check and average linkage, at 0.60, gave no wrong multi-outlet groups and 16 clean ones, against 4 that would publish wrongly and 9 clean today. Embeddings alone are worse, merging by topic. They find about the same number of matches as word matching, so the gain is fewer wrong stories.
@@ -537,3 +646,38 @@ Where a story has an open question ("Will the bill be signed?"), show the market
 - **Rules:** the odds are always labeled as a market's price, with a link to the market and no effect on any score.
 - **Needs a person:** a legal check, and D11.
 - **Done when:** odds appear on matching stories with their source and trading volume, and past odds can be checked against what happened.
+
+---
+
+## Appendix: first check on real news (2026-11-05)
+
+One local run on the live feeds, with no model and nothing published. It's a single day just after the midterms, and without a Congress key, so government records are undercounted. Local runs also stored feed times 8 hours late until a bug was fixed afterward, so the window was slightly off. A recount of the one-sided stories with a true 36-hour window matched.
+
+| Measure | Result |
+| --- | --- |
+| Articles in the 36-hour window | 234 |
+| Groups, at similarity 0.15 | 192 |
+| Groups with 2 or more outlets | 15 |
+| Stories that would be written | 14 before fixing reposted laws, 10 after |
+| Stories in the main list at the standard threshold | 9 |
+| Stories covered by left, center and right | **1** |
+
+What this showed:
+
+- **Three-sided coverage is rare, partly because of the list.** The WSJ feed had moved, leaving The Hill and the BBC as the only working center outlets (L4, T3). The list had 11 outlets then. The strict setting would show almost nothing.
+- **Grouping publishes wrong merges (O4).** A test on 232 hand-labeled articles found 4 groups that would have published a wrong story, including the day's only three-sided story, which merged separate events. Better grouping mostly prevents those. It doesn't find many more matches, so it won't raise three-sided coverage by itself.
+- **One-sided stories are being lost (T1).** All six one-lean stories were dropped at the current setting. Four of them had 2 or more rated outlets on one side.
+- **Feeds are shallow.** One fetch reached back 1.6 hours for the NY Post and 4.2 for The Hill, against 131 for the Guardian. A once-a-day fetch can make a story look one-sided when it isn't, and it tilts against center and right.
+- **Sports reached the edition.** Decided: no sports for now. `docs/ranking.md` has the rule, and each edition file lists what it left out.
+- **Reposted laws looked new.** GovInfo reposted old laws with fresh dates, so 2021 laws appeared as today's records, and it was weeks behind on real ones. Fixed by F7.
+
+With the Congress key added, the same check found no bills with a significant action in the window, so records didn't change the result that day. Congress was just past an election, so this needs a week in session to judge. A rerun later that day gave 8 stories rather than 10, because the feeds had moved on, so treat these counts as rough.
+
+## Change log
+
+| Date | Change |
+| --- | --- |
+| 2026-11-15 | Reorganized into Now, Next and Later, with a direction, a list of what isn't planned, and one table each for open and settled decisions. Updated statuses after the first live edition. Added L12, L13, T8, R8, R9 and decisions D12 to D15. Open data items renamed from D1 to D4 to O1 to O4, because they clashed with decision numbers |
+| 2026-11-13 | 14 outlets added. Decisions D4, D5, D6 and D9 settled |
+| 2026-11-12 | Contributor, tooling and grouping descriptions updated for the prelaunch review |
+| 2026-11-05 | First version, with the first check on real news |
