@@ -11,7 +11,7 @@ The approved visual reference is the "The blend" board on the [brand canvas](htt
 **Related files:**
 
 - [`editorial/style_guide.md`](editorial/style_guide.md) sets how stories are written. This file sets how the site's own words and visuals work.
-- [`docs/roadmap.md`](docs/roadmap.md) tracks what's planned.
+- [`docs/roadmap.md`](docs/roadmap.md) lists what's planned, and [`docs/planning.md`](docs/planning.md) has each item by its ID (L11, T7, I1).
 - [`GLOSSARY.md`](GLOSSARY.md) defines project terms.
 
 ---

@@ -66,7 +66,7 @@ Standard Edition is meant to be useful to anyone covering a beat, including stud
 
 ## Roadmap
 
-United States first. International coverage starts only once US coverage is solid. The full plan is in [`docs/roadmap.md`](docs/roadmap.md): what's being worked on now, what comes next, what isn't planned, and what's missing for each feature.
+United States first. International coverage starts only once US coverage is solid. The [roadmap](docs/roadmap.md) lists what's being worked on now and what comes next. The [planning notes](docs/planning.md) have the detail for each feature.
 
 **Phase 1: National edition** (built)
 - [x] Read outlet RSS feeds across left, center and right
