@@ -142,7 +142,8 @@ def _parse(text: str) -> dict:
 # is never parsed. Writers that make real calls keep token totals in `usage`,
 # which stays None until a call reports them. Every call counts, failed ones too.
 
-MAX_TOKENS = 2000  # Room for the reply on top of any thinking; running out means a failed reply.
+MAX_TOKENS = 2000  # Other writers: room for the reply. Running out means a failed reply.
+CLAUDE_MAX_TOKENS = 8000  # Includes adaptive thinking and the structured reply.
 LOCAL_TIMEOUT = 300  # Seconds. Local models can be slow.
 
 
@@ -172,7 +173,7 @@ class ClaudeWriter:
         self.client = client
         self.model = model
 
-    def complete(self, system: str, messages: list[dict], max_tokens: int = MAX_TOKENS) -> str:
+    def complete(self, system: str, messages: list[dict], max_tokens: int = CLAUDE_MAX_TOKENS) -> str:
         resp = self.client.messages.create(
             model=self.model, max_tokens=max_tokens, system=system, messages=messages,
             output_config={"effort": "low"},
@@ -297,6 +298,25 @@ def _verify_with_model(writer, bullets, articles, sources) -> dict[int, dict]:
     return verdicts
 
 
+def first_sentence(text: str) -> str:
+    """Keep titles and initials attached to the sentence they introduce."""
+    text = text.strip()
+    titles = {"sen.", "rep.", "dr.", "mr.", "mrs.", "ms.", "gov.", "rev.",
+              "gen.", "lt.", "col.", "prof.", "st."}
+    for boundary in SENTENCE_RE.finditer(text):
+        prefix = text[:boundary.start()]
+        last = prefix.split()[-1].lower()
+        following = text[boundary.end():]
+        if last in titles:
+            continue
+        if re.fullmatch(r"(?:[a-z]\.)+", last) and (
+            len(last) == 2 or following[:1].islower()
+        ):
+            continue
+        return prefix
+    return text
+
+
 def fallback(articles: list[Article], sources: dict[str, Source], banned: list[str]) -> Draft:
     def rank(a: Article):
         s = sources.get(a.source_id)
@@ -312,7 +332,7 @@ def fallback(articles: list[Article], sources: dict[str, Source], banned: list[s
 
     bullets, seen = [], set()
     for a in ordered:
-        first = SENTENCE_RE.split(a.summary.strip())[0] if a.summary else ""
+        first = first_sentence(a.summary) if a.summary else ""
         key = first.lower()[:60]
         if first and key not in seen and not lint(first, banned):
             bullets.append(first)
