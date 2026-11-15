@@ -444,7 +444,8 @@ A slow scrolling ticker of the latest closes under the navigation, in Source San
 ### Notices
 
 - **Sample edition:** a thin `--sheet` bar at the very top, in 14px text. Required on all invented content.
-- **Failed feeds, corrections or an old edition:** a plain note at the top of Today, stating what happened and linking to the details.
+- **Failed feeds or corrections:** a plain note at the top of Today, stating what happened and linking to the details.
+- **An old edition:** the same note, starting with "This edition is out of date." in bold, with a 3px `--ink` rule on its left. When a run fails, the last good edition stays up, and this note is the first thing readers see. It isn't amber: amber only marks a side that didn't run a story.
 
 ### Empty and error states
 

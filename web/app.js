@@ -441,7 +441,11 @@
     var box = $("notices"), sayNote = function (children) { box.appendChild(el("p", { className: "notice" }, children)); };
     box.innerHTML = "";
     var age = Math.floor((Date.now() - new Date(D.edition + "T12:00:00Z").getTime()) / 86400000);
-    if (!D.sample && age >= 2) sayNote(["This is the edition of " + longDate(D.edition) + ". A newer one hasn't been published yet."]);
+    if (!D.sample && age >= 2) {
+      // A missed run leaves the last good edition up, marked as out of date.
+      box.appendChild(el("p", { className: "notice notice-stale", role: "status" },
+        [el("strong", { text: "This edition is out of date." }), " It's the edition of " + longDate(D.edition) + ". A newer one hasn't been published yet."]));
+    }
     var down = (D.feeds_down || []).map(function (id) { return D.sources[id] ? D.sources[id].name : id; });
     if (down.length) sayNote(["We couldn't read " + listWords(down) + " today, so some coverage may be missing."]);
     if ((D.corrections || []).some(function (c) { return c.edition === D.edition; })) {
