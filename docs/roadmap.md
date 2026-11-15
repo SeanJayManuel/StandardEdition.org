@@ -34,15 +34,23 @@ Last updated: 2026-11-15.
 - **State and local news.** One state and a few cities first, starting with San Mateo County, California.
 - **Other countries and languages.** After US coverage is solid.
 
-## Not planned
+## Not planned yet
 
-- A live feed, infinite scroll or breaking-news alerts
-- Reader accounts or profiles
-- Ads, sponsorships or paid tiers
-- Original reporting or fact-check verdicts
-- Ranking by clicks, shares or social trends
-- Native iOS and Android apps, for now
-- Sports, for now
+These could happen, but nobody is working on them and there's no plan for them yet.
+
+- **Native iOS and Android apps.** An installable site comes first.
+- **Sports coverage.** The edition leaves sports out for now.
+- **A live feed or breaking-news alerts.** The edition is published at fixed times.
+- **Reader accounts.** Settings stay in the browser today. Accounts would only be considered if a feature can't work without them.
+
+## Out of scope
+
+These go against what the project is for, and won't be added.
+
+- **Ads, sponsorships or paid tiers.** The Standard Edition is free, with nothing to sell.
+- **Tracking readers, or selling or renting their data.**
+- **Ranking by clicks, shares or social trends.** What readers see is decided by published rules, not by engagement.
+- **Original reporting or fact-check verdicts.** The site shows who reported what. It doesn't rule on what's true.
 
 ## Get involved
 

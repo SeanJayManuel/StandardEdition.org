@@ -290,7 +290,7 @@ Stories that one side covered and the others didn't.
 ### R8. A site that installs like an app ⬜ S
 
 - **Exists:** a static site with its own fonts and no runtime dependencies, which already loads quickly on a phone.
-- **Gaps:** a web app manifest and icons, so a phone or desktop can add the site to its home screen, and a small offline cache so the last edition opens without a connection. No push notifications: they're out of scope.
+- **Gaps:** a web app manifest and icons, so a phone or desktop can add the site to its home screen, and a small offline cache so the last edition opens without a connection. Push notifications aren't planned.
 - **Done when:** the site can be installed on iOS, Android and desktop, and the last edition opens offline.
 
 ### R9. Email edition ⬜ M
