@@ -218,3 +218,77 @@ def test_required_writer_stops_when_every_story_falls_back(tmp_path):
         run(FixtureInputs(SOURCES), BrokenWriter(), tmp_path / "t.db", DATE, tmp_path / "archive", require_writer=True)
     assert editions(connect(tmp_path / "t.db")) == []
     assert not (tmp_path / "archive").exists()
+
+
+# ---- A second run on the same date updates the edition ----
+
+class CountingWriter(MockWriter):
+    """The demo writer, counting the calls it gets."""
+
+    def __init__(self):
+        super().__init__(config.FIXTURE_REWRITES_PATH, config.FIXTURE_ARTICLES_PATH)
+        self.calls = 0
+
+    def complete(self, *a, **k):
+        self.calls += 1
+        return super().complete(*a, **k)
+
+
+class Without(FixtureInputs):
+    """The sample data, minus some articles, as a feed looks earlier in the day."""
+
+    def __init__(self, sources, missing):
+        super().__init__(sources)
+        self.missing = missing
+
+    def articles(self, since=None):
+        arts, health = super().articles(since)
+        return [a for a in arts if a.url not in self.missing], health
+
+
+def published(e):
+    return {s.id: (s.headline, s.bullets) for s in e.stories}
+
+
+def test_a_second_run_with_nothing_new_keeps_every_story_and_writes_nothing(tmp_path):
+    db = tmp_path / "t.db"
+    first = run(FixtureInputs(SOURCES), CountingWriter(), db, DATE)
+    writer = CountingWriter()
+    second = run(FixtureInputs(SOURCES), writer, db, DATE)
+    assert published(first) == published(second) and writer.calls == 0
+
+
+def test_a_story_that_gains_a_report_keeps_its_link_and_is_written_again(tmp_path):
+    db = tmp_path / "t.db"
+    whole = run(FixtureInputs(SOURCES), None, tmp_path / "whole.db", DATE)
+    story = max(whole.stories, key=lambda s: len(s.articles))
+    late = story.articles[-1].url
+    first = run(Without(SOURCES, {late}), CountingWriter(), db, DATE)
+    before = next(s for s in first.stories if {a.url for a in s.articles} < {a.url for a in story.articles})
+    writer = CountingWriter()
+    second = run(FixtureInputs(SOURCES), writer, db, DATE)
+    after = next(s for s in second.stories if s.id == before.id)
+    assert late in {a.url for a in after.articles} and writer.calls >= 1
+    untouched = {i: v for i, v in published(first).items() if i != before.id}
+    assert untouched == {i: v for i, v in published(second).items() if i != before.id}
+
+
+def test_a_story_the_second_run_drops_stays_in_the_edition(tmp_path):
+    db = tmp_path / "t.db"
+    first = run(FixtureInputs(SOURCES), None, db, DATE)
+    gone = first.stories[0]
+    matched, kept = pipeline.match_earlier(first.stories, [s.articles for s in first.stories[1:]])
+    assert kept == [gone] and [matched[i].id for i in sorted(matched)] == [s.id for s in first.stories[1:]]
+
+
+def test_a_fallback_story_is_written_again_once_a_writer_is_back(tmp_path):
+    db = tmp_path / "t.db"
+    first = run(FixtureInputs(SOURCES), None, db, DATE)
+    second = run(FixtureInputs(SOURCES), CountingWriter(), db, DATE)
+    assert {s.id for s in first.stories} == {s.id for s in second.stories}
+    assert any(s.written_by == "mock" for s in second.stories)
+
+
+def test_the_edition_is_built_twice_a_day():
+    crons = [s["cron"] for s in workflow("nightly.yml")[True]["schedule"]]
+    assert len(crons) == 2

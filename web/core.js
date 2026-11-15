@@ -269,7 +269,7 @@
         "<title>The Standard Edition" + (p.recipe ? " (reader recipe: " + esc(p.recipe) + ")" : "") + "</title>",
         "<link>" + esc(baseUrl) + "/</link>",
         '<atom:link href="' + esc(self) + '" rel="self" type="application/rss+xml"/>',
-        "<description>The day's news, once a day, without the noise.</description>",
+        "<description>The day's news, twice a day, without the noise.</description>",
         "<language>en-us</language><ttl>720</ttl>",
         "<lastBuildDate>" + pub + "</lastBuildDate>"
       ];
