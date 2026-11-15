@@ -75,7 +75,6 @@ These block or shape work, and only the maintainer can make them.
 | # | Decision | Affects |
 | --- | --- | --- |
 | D1 | **When to turn the nightly job back on.** It's disabled on GitHub until launch | L1, L2 |
-| D5 | **What does Boring News do on a day the pipeline fails?** Show yesterday's edition with a notice, or nothing? | L8 |
 | D7 | **How much AI writing is disclosed** on each story, beyond the "written by" field in edition files | T5 |
 | D10 | **How to reach readers under censorship.** The goal is set: the same access a US reader has, with everything in their area aggregated. Still open: which routes to run first (mirrors, Tor, email), and what we can honestly promise about their safety | I5, I6 |
 | D11 | **Can anything outside the press and public records affect a story's score?** Recommended: no. Social trends and market odds stay in their own labeled lists. Not urgent while X1 is on hold | X1, X2 |
@@ -117,7 +116,7 @@ Goal: a real edition, published every day, that the maintainer would be happy fo
 ### L5. First real edition, read by a person ⬜ M
 
 - **Exists:** the writer, retries, linter and fact check, tested with stand-ins only.
-- **Gaps:** the real Claude call has never run. The model's fact-check call hasn't either. Unknown: real cost per edition (each edition file now records its token totals in `editorial.usage`), whether 2,000 tokens is always enough, how often the fallback writer is used, and how many bullets the fact check wrongly removes.
+- **Gaps:** the real Claude call has never run. The model's fact-check call hasn't either. Unknown: real cost per edition (each edition file now records its token totals in `editorial.usage`), whether 8,000 tokens is always enough (raised from 2,000 on 2026-11-13, because adaptive thinking counts toward the limit), how often the fallback writer is used, and how many bullets the fact check wrongly removes.
 - **Needs a person:** read a full edition against its sources, and judge it. Decision D6.
 - **Done when:** five editions in a row are good enough to publish unedited, and cost per edition is in the ledger.
 
@@ -138,7 +137,8 @@ Goal: a real edition, published every day, that the maintainer would be happy fo
 
 - **Exists:** source and ticker problems are printed in the workflow log.
 - **Built (2026-11-05):** Today says when an edition is two or more days old, when feeds couldn't be read and when a story was corrected.
-- **Gaps:** nobody is told when a run fails or half the sources go quiet. Decision D5.
+- **Decided (2026-11-13, D5):** on a day the pipeline fails, the last good edition stays up, with a "This edition is out of date" banner above the stories.
+- **Gaps:** nobody is told when a run fails or half the sources go quiet.
 - **Done when:** a failed or thin run sends the maintainer an alert.
 
 ### L9. Launch legal check 🟡 S

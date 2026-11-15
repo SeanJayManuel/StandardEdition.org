@@ -448,7 +448,8 @@ def with_data(site, tmp_path, **changes):
 @jsdom
 def test_page_says_when_the_edition_is_old(tmp_path, site):
     page = open_page(with_data(site, tmp_path, edition="2026-10-01", sample=False), f"{BASE}/")
-    assert page["errors"] == [] and "A newer one hasn't been published yet." in page["notices"][0]
+    assert page["errors"] == [] and page["notices"][0].startswith("This edition is out of date.")
+    assert "A newer one hasn't been published yet." in page["notices"][0]
 
 
 @jsdom
