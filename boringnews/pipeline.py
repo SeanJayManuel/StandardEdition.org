@@ -17,7 +17,7 @@ from datetime import date, datetime, time, timedelta, timezone
 
 from . import config, rubric, threads
 from .cluster import WORDS, Grouping, best_available, cluster
-from .db import Story, articles_between, connect, upsert_articles
+from .db import Story, articles_between, connect, load_edition, upsert_articles
 from .edition import Edition
 from .inputs import FixtureInputs, LiveInputs
 from .rewrite import ClaudeWriter, LocalWriter, MockWriter, load_banned, write_story
@@ -29,6 +29,26 @@ def edition_window(edition_date: str, lookback_hours: int) -> tuple[str, str]:
     end = datetime.combine(d, time(23, 59, 59), tzinfo=timezone.utc)
     start = end - timedelta(hours=lookback_hours)
     return start.isoformat(), end.isoformat()
+
+
+def match_earlier(earlier: list[Story], groups: list[list]) -> tuple[dict[int, Story], list[Story]]:
+    """Pair this run's groups with the stories an earlier run published for the
+    same date, by the articles they share. Returns {group index: earlier story}
+    and the earlier stories no group matched. Each story is used once, and the
+    pair sharing the most articles wins."""
+    pairs = []
+    for i, group in enumerate(groups):
+        keys = {a.key for a in group}
+        for j, story in enumerate(earlier):
+            shared = len(keys & {a.key for a in story.articles})
+            if shared:
+                pairs.append((shared, i, j))
+    matched, used = {}, set()
+    for _, i, j in sorted(pairs, key=lambda p: (-p[0], p[1], p[2])):
+        if i not in matched and j not in used:
+            matched[i] = earlier[j]
+            used.add(j)
+    return matched, [s for j, s in enumerate(earlier) if j not in used]
 
 
 def pick_writer(mock: bool):
@@ -89,7 +109,7 @@ def run(inputs, writer, db_path, edition_date: str, archive_dir=None, require_wr
     print(f"{len(articles)} articles in window -> {len(clusters)} clusters, grouped by {grouping.method}.")
 
     # 3. Score; only write up clusters that pass the loosest reader setting
-    stories, sports = [], []
+    stories, sports, candidates = [], [], []
     for group in cap_official(clusters, sources):
         sc = rubric.score(sources[a.source_id] for a in group)
         if not rubric.is_candidate(sc):
@@ -98,10 +118,26 @@ def run(inputs, writer, db_path, edition_date: str, archive_dir=None, require_wr
             sports.append(group)
             print(f"  [{sc.total:.2f}] left out as sports: {group[0].title}  ({len(group)} articles)")
             continue
+        candidates.append((sc, group))
+
+    # A later run on the same date updates the edition; it doesn't start again.
+    # A published story keeps its id, and so its link. It is written again only
+    # when new reports have joined it, and it stays even if this run drops it.
+    matched, kept = match_earlier(load_edition(conn, edition_date), [g for _, g in candidates])
+    written = []
+    for i, (sc, group) in enumerate(candidates):
+        before = matched.get(i)
+        if (before and {a.key for a in before.articles} == {a.key for a in group}
+                and (before.written_by != "fallback" or writer is None)):
+            stories.append(before)
+            print(f"  [{sc.total:.2f}] {before.headline}  (unchanged since the earlier run)")
+            continue
         # 4. Rewrite
         draft = write_story(group, sources, banned, writer, style_guide)
+        written.append(draft)
         stories.append(
             Story(
+                id=before.id if before else None,
                 edition_date=edition_date,
                 headline=draft.headline,
                 bullets=draft.bullets,
@@ -118,7 +154,11 @@ def run(inputs, writer, db_path, edition_date: str, archive_dir=None, require_wr
         note = f", {dropped} dropped by fact check" if dropped else ""
         print(f"  [{sc.total:.2f}] {draft.headline}  ({len(group)} articles, {draft.written_by}{note})")
 
-    if require_writer and stories and all(s.written_by == "fallback" for s in stories):
+    for s in kept:
+        print(f"  kept from the earlier run: {s.headline}")
+    stories.extend(kept)
+
+    if require_writer and written and all(d.written_by == "fallback" for d in written):
         raise SystemExit("Not storing the edition: every story used the fallback writer.")
 
     # 5. Follow developing stories from the previous edition

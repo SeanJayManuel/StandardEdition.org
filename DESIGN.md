@@ -20,7 +20,7 @@ The approved visual reference is the "The blend" board on the [brand canvas](htt
 
 ### What it is
 
-The Standard Edition is a free, once-a-day news edition that shows what happened, who covered it and who didn't.
+The Standard Edition is a free, twice-a-day news edition that shows what happened, who covered it and who didn't.
 
 ### The thesis
 
@@ -57,7 +57,7 @@ Agreement only counts when sources are independent, and every outlet can miss th
 
 | Level | Use | Words |
 | --- | --- | --- |
-| One line | Social bios, search results | The day's news, once a day. Who covered it, who didn't, and every rule in public. |
+| One line | Social bios, search results | The day's news, twice a day. Who covered it, who didn't, and every rule in public. |
 | Short | About page opening, link previews | The Standard Edition reads outlets across the political spectrum and public records, then publishes one plain edition a day. It's free, with no ads, accounts or tracking. The rules are public, and you can change them. |
 | Long | About page | The thesis, how a story gets chosen, who runs it, how it's paid for, and the FAQ |
 
@@ -608,7 +608,7 @@ Before merging any change a reader can see:
 | 2026-11-05 | No Pause button on the ticker | Keeps the row clean. It still stops on hover or focus, and holds still with reduced motion. Phone readers can't stop it, which needs review in the accessibility audit (L10) |
 | 2026-11-05 | Ticker holds still on touch screens | Replaces the open question above. Moving content needs a way to stop it, and a phone has no hover. This keeps the row clean without a Pause button |
 | 2026-11-05 | Title case for category names | A name like Health & Science read as unfinished with a lowercase second word |
-| 2026-11-05 | Latest closes from FRED, not live prices | Free, and it fits a once-a-day edition |
+| 2026-11-05 | Latest closes from FRED, not live prices | Free, and it fits an edition published at fixed times |
 | 2026-11-05 | Ledger in the footer, not the top navigation | Readers should be able to find it, but it isn't a daily destination |
 
 ### What we took from the references

@@ -30,7 +30,7 @@ Standard Edition takes the opposite position. A news feed is a set of decisions,
 
 6. **Local news matters as much as national.** What your school board and city council decide often affects you more than what happens in Washington. State and municipal news are on the roadmap as first-class coverage, not an afterthought.
 
-7. **Boring on purpose.** Once a day. No outrage optimization, no infinite scroll, no engagement metrics deciding what you see. Plain language, clear sourcing, done.
+7. **Boring on purpose.** Twice a day, at fixed times. No outrage optimization, no infinite scroll, no engagement metrics deciding what you see. Plain language, clear sourcing, done.
 
 8. **Open books.** Every dollar in and every dollar out is published on the site and in [`LEDGER.md`](LEDGER.md). If donations ever exist, they exist only to keep the servers running, and the ledger shows it.
 
@@ -73,7 +73,7 @@ United States first. International coverage starts only once US coverage is soli
 - [x] Group articles into stories
 - [x] Published selection rubric, with balanced weighting so no side counts more
 - [x] Plain-language summaries, banned-word linter and fact check
-- [x] Website and RSS output, nightly build
+- [x] Website and RSS output, built twice a day
 - [x] Full daily edition files and corrections log
 
 **Phase 2: Reader control** (mostly built)
@@ -228,9 +228,10 @@ The nightly workflow then builds the edition, exports the site and deploys it.
 To host somewhere without functions, export with `--static-feed` to get a
 fixed default `feed.xml`.
 
-Run `pipeline run` once a day (cron, or the GitHub Actions workflow in
-`.github/workflows/nightly.yml`). Re-running for the same date replaces that
-edition.
+Run `pipeline run` twice a day (cron, or the GitHub Actions workflow in
+`.github/workflows/nightly.yml`). A second run for the same date updates that
+edition: published stories keep their links, and only stories with new reports
+are written again. See [the decision record](docs/decisions/0001-two-editions-a-day.md).
 
 ## Pipeline
 

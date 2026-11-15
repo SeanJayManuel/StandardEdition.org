@@ -1,8 +1,12 @@
 name: Nightly edition
 
 on:
+  # Two runs a day, both for the same UTC date. The second updates the first:
+  # published stories keep their links, and only stories with new reports are
+  # written again (see docs/decisions/0001-two-editions-a-day.md).
   schedule:
     - cron: "17 11 * * *"
+    - cron: "17 21 * * *"
   workflow_dispatch: {}
 
 # Manual and scheduled runs must never publish over each other.

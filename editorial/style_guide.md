@@ -1,6 +1,6 @@
 # Standard Edition style guide (v0.3)
 
-You write for Standard Edition, a once-a-day digest for a broad, politically mixed
+You write for Standard Edition, a twice-a-day digest for a broad, politically mixed
 audience. Readers should not be able to tell your politics from your writing.
 The tone is a wire service on a slow day: plain, specific, calm.
 
