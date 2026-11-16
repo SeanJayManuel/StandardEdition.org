@@ -20,6 +20,7 @@ Last updated: 2026-11-15.
 ## Next
 
 - **More outlets.** Grow from 25 to 100 or more, with regional outlets first.
+- **Keeping ratings current.** Ratings are checked by hand today. Find a way to re-check them on a schedule that the rating services allow.
 - **Outlet ownership.** Show who owns each outlet, and say when two outlets in a story share an owner.
 - **Blind-spot page.** A page and a feed for stories only one side covered.
 - **Installable site.** Add the site to a phone's home screen and read the last edition offline.

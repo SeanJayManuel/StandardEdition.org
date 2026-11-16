@@ -183,7 +183,11 @@ So today a three-outlet story on the left is dropped and the same story on the r
 - **Gaps:** 11 outlets still carry a starting label: NPR, The New York Times, The Guardian, CBS News, the Los Angeles Times, The Hill, BBC News, Fox News, the New York Post, The Washington Times and Al Jazeera English. There's one rater, so no disagreement can show yet. Re-checking is by hand: there's no automated way to notice a rating that changed.
 - **Needs a person:** AllSides answers automated requests with 403 and its `robots.txt` asks that its pages not be used as AI input, so a person has to open each page in a browser. The checklist is in issue #18. Ask AllSides whether it offers its ratings as data, or would allow a scheduled check, in the same email as the license question (D4). Add Ad Fontes and Media Bias/Fact Check once they give permission (D4).
 - **Expect:** an outlet whose AllSides label differs from its starting label changes side, which moves the balance weights. The pull request that adds the ratings should compare the same day's edition before and after.
-- **Done when:** every outlet has cited ratings, and disagreements between raters show on the site.
+- **To do, keeping ratings current:** checking by hand won't hold at 100 outlets with a review every quarter. Options, in order of preference:
+  1. Ask AllSides whether a free, open-source project can get its ratings as data, or be allowed a scheduled check.
+  2. Add raters that permit automated access. Ad Fontes and Media Bias/Fact Check need written permission first (D4). A second rater also lets the site show disagreement.
+  3. Make the manual pass quick: a local form that lists each outlet with its link and writes the `sources.yaml` entries.
+- **Done when:** every outlet has cited ratings, disagreements between raters show on the site, and ratings are re-checked on a schedule.
 
 ### T3. A larger, balanced source list 🟡 M
 
