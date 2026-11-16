@@ -32,7 +32,8 @@ def problems(edition: dict) -> list[str]:
 
 
 def newest(directory: Path) -> Path | None:
-    files = sorted(Path(directory).glob("*.json"))
+    # Edition files only: the folder may hold other JSON, such as an index.
+    files = sorted(Path(directory).glob("????-??-??.json"))
     return files[-1] if files else None
 
 
