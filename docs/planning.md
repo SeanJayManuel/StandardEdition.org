@@ -101,11 +101,10 @@ Goal: a real edition, published on schedule every day, that the maintainer would
 
 ### L8. Failure handling and alerts 🟡 S
 
-- **Exists:** source and ticker problems are printed in the workflow log.
-- **Built (2026-11-05):** Today says when an edition is two or more days old, when feeds couldn't be read and when a story was corrected.
-- **Decided (2026-11-13, D5):** on a day the pipeline fails, the last good edition stays up, with a "This edition is out of date" banner above the stories.
-- **Gaps:** nobody is told when a run fails or half the sources go quiet. It matters more once the job runs unattended.
-- **Done when:** a failed or thin run sends the maintainer an alert.
+- **Built:** Today says when an edition is two or more days old, when feeds couldn't be read and when a story was corrected. On a day the pipeline fails, the last good edition stays up with a "This edition is out of date" banner (D5).
+- **Built (2026-11-15):** the scheduled job opens a GitHub issue, or comments on the open one, when a job fails or the edition looks thin. Thin means more than a quarter of feeds unreadable, fewer than five stories, or any story written by the fallback writer (`boringnews/health.py`). A thin edition is still published.
+- **Gaps:** it hasn't fired on a real run, because the scheduled job is still off. Nothing notices a run GitHub never starts, apart from the banner.
+- **Done when:** a real failed or thin run has raised an issue, and the maintainer got the notification.
 
 ### L9. Launch legal check 🟡 S
 
