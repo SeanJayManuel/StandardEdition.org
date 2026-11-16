@@ -179,8 +179,9 @@ So today a three-outlet story on the left is dropped and the same story on the r
 ### T2. Cited ratings for every outlet 🟡 M
 
 - **Built (2026-11-15):** a rating in `sources.yaml` carries the service's label, the address of its rating page and the day it was checked. The Outlets table links each rating to its page with that date, and credits AllSides under its license. The averaging rule is in `docs/labeling.md`.
-- **Gaps:** no outlet has a `ratings` entry yet. Every label is a hand-set starting assumption.
-- **Needs a person:** AllSides answers automated requests with 403 and its `robots.txt` asks that its pages not be used as AI input, so a person has to open each page in a browser. The checklist is in issue #18. Add Ad Fontes and Media Bias/Fact Check once they give permission (D4).
+- **Cited (2026-11-15):** 13 of 25 outlets have an AllSides rating, read on its page by the maintainer. None changed side, so the balance weights are the same. France 24 is Not Rated there and stays unrated.
+- **Gaps:** 11 outlets still carry a starting label: NPR, The New York Times, The Guardian, CBS News, the Los Angeles Times, The Hill, BBC News, Fox News, the New York Post, The Washington Times and Al Jazeera English. There's one rater, so no disagreement can show yet. Re-checking is by hand: there's no automated way to notice a rating that changed.
+- **Needs a person:** AllSides answers automated requests with 403 and its `robots.txt` asks that its pages not be used as AI input, so a person has to open each page in a browser. The checklist is in issue #18. Ask AllSides whether it offers its ratings as data, or would allow a scheduled check, in the same email as the license question (D4). Add Ad Fontes and Media Bias/Fact Check once they give permission (D4).
 - **Expect:** an outlet whose AllSides label differs from its starting label changes side, which moves the balance weights. The pull request that adds the ratings should compare the same day's edition before and after.
 - **Done when:** every outlet has cited ratings, and disagreements between raters show on the site.
 

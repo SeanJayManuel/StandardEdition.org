@@ -37,19 +37,22 @@ sources:
     url: https://feeds.washingtonpost.com/rss/national
     lean: left
     type: national
-    # AllSides (to confirm): Lean Left, https://www.allsides.com/news-source/washington-post-media-bias
+    ratings:
+      AllSides: {label: Lean Left, url: https://www.allsides.com/news-source/washington-post-media-bias, checked: 2026-11-15}
   - id: politico
     name: Politico
     url: https://rss.politico.com/politics-news.xml
     lean: left
     type: national
-    # AllSides (to confirm): Lean Left, https://www.allsides.com/news-source/politico-media-bias
+    ratings:
+      AllSides: {label: Lean Left, url: https://www.allsides.com/news-source/politico-media-bias, checked: 2026-11-15}
   - id: axios
     name: Axios
     url: https://api.axios.com/feed/
     lean: left
     type: national
-    # AllSides (to confirm): Lean Left (moved from Center in 2023), https://www.allsides.com/news-source/axios-media-bias
+    ratings:
+      AllSides: {label: Lean Left, url: https://www.allsides.com/news-source/axios-media-bias, checked: 2026-11-15}
   - id: la-times
     name: Los Angeles Times (Nation)
     url: https://www.latimes.com/nation/rss2.0.xml
@@ -73,31 +76,39 @@ sources:
     url: https://rss.upi.com/news/top_news.rss
     lean: center
     type: wire
-    # AllSides (to confirm): Center, low confidence, https://www.allsides.com/news-source/united-press-international-media-bias
+    # AllSides gives this rating low or initial confidence.
+    ratings:
+      AllSides: {label: Center, url: https://www.allsides.com/news-source/united-press-international-media-bias, checked: 2026-11-15}
   - id: csmonitor
     name: The Christian Science Monitor
     url: https://rss.csmonitor.com/feeds/all
     lean: center
     type: national
-    # AllSides (to confirm): Center, https://www.allsides.com/news-source/christian-science-monitor
+    ratings:
+      AllSides: {label: Center, url: https://www.allsides.com/news-source/christian-science-monitor, checked: 2026-11-15}
   - id: newsnation
     name: NewsNation
     url: https://www.newsnationnow.com/feed/
     lean: center
     type: national
-    # AllSides (to confirm): Center, https://www.allsides.com/news-source/newsnation-media-bias . Same owner as The Hill (Nexstar).
+    # Same owner as The Hill (Nexstar).
+    ratings:
+      AllSides: {label: Center, url: https://www.allsides.com/news-source/newsnation-media-bias, checked: 2026-11-15}
   - id: reason
     name: Reason
     url: https://reason.com/feed/
     lean: center
     type: national
-    # AllSides (to confirm): Center (libertarian; moved from Lean Right in 2024), https://www.allsides.com/news-source/reason-media-bias
+    ratings:
+      AllSides: {label: Center, url: https://www.allsides.com/news-source/reason-media-bias, checked: 2026-11-15}
   - id: oregonian
     name: The Oregonian
     url: https://www.oregonlive.com/arc/outboundfeeds/rss/?outputType=xml
     lean: center
     type: regional
-    # AllSides (to confirm): Center, low confidence, https://www.allsides.com/news-source/oregonian-media-bias
+    # AllSides gives this rating low or initial confidence.
+    ratings:
+      AllSides: {label: Center, url: https://www.allsides.com/news-source/oregonian-media-bias, checked: 2026-11-15}
 
   # ---- right ----
   - id: fox-politics
@@ -120,25 +131,30 @@ sources:
     url: https://www.washingtonexaminer.com/feed/
     lean: right
     type: national
-    # AllSides (to confirm): Lean Right, https://www.allsides.com/news-source/washington-examiner-media-bias
+    ratings:
+      AllSides: {label: Lean Right, url: https://www.allsides.com/news-source/washington-examiner-media-bias, checked: 2026-11-15}
   - id: the-dispatch
     name: The Dispatch
     url: https://thedispatch.com/feed/
     lean: right
     type: national
-    # AllSides (to confirm): Lean Right, https://www.allsides.com/news-source/dispatch-media-bias
+    ratings:
+      AllSides: {label: Lean Right, url: https://www.allsides.com/news-source/dispatch-media-bias, checked: 2026-11-15}
   - id: national-review
     name: National Review
     url: https://www.nationalreview.com/feed/
     lean: right
     type: national
-    # AllSides (to confirm): Lean Right (news), https://www.allsides.com/news-source/national-review-news-media-bias
+    ratings:
+      AllSides: {label: Lean Right, url: https://www.allsides.com/news-source/national-review-news-media-bias, checked: 2026-11-15}
   - id: center-square
     name: The Center Square
     url: https://www.thecentersquare.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc
     lean: right
     type: regional
-    # AllSides (to confirm): Lean Right, low confidence, https://www.allsides.com/news-source/center-square-media-bias
+    # AllSides gives this rating low or initial confidence.
+    ratings:
+      AllSides: {label: Lean Right, url: https://www.allsides.com/news-source/center-square-media-bias, checked: 2026-11-15}
 
   # ---- unrated / international ----
   - id: al-jazeera
@@ -151,13 +167,15 @@ sources:
     url: https://rss.dw.com/rdf/rss-en-all
     lean: center
     type: international
-    # AllSides (to confirm): Center, low confidence, https://www.allsides.com/news-source/deutsche-welle-media-bias
+    # AllSides gives this rating low or initial confidence.
+    ratings:
+      AllSides: {label: Center, url: https://www.allsides.com/news-source/deutsche-welle-media-bias, checked: 2026-11-15}
   - id: france24
     name: France 24
     url: https://www.france24.com/en/rss
     lean: unrated
     type: international
-    # AllSides: Not Rated, https://www.allsides.com/news-source/france-24-media-bias
+    # AllSides: Not Rated when checked on 2026-11-15, https://www.allsides.com/news-source/france-24-media-bias
 
   # ---- official sources, straight from the government ----
   # role: record     legal or statistical standing (laws, rules, rulings, votes,
