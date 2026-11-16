@@ -17,8 +17,12 @@ Current hand-set lean labels are provisional starting assumptions, not a claim t
 
 ```yaml
 - id: example
-  ratings: {ServiceA: lean left, ServiceB: center}
+  ratings:
+    ServiceA: {label: lean left, url: https://example.org/ratings/example, checked: 2026-11-15}
+    ServiceB: {label: center, url: https://example.com/example, checked: 2026-11-15}
 ```
+
+Each rating records the service's own label, the address of the rating page, and the day a person read it there. A rating without an address and a date is rejected. A bare label (`ServiceA: lean left`) still loads, for older edition files, but new ratings should be cited.
 
 Each rating is turned into a number (left −2, lean left −1, center 0, lean right +1, right +2) and averaged:
 
@@ -28,7 +32,7 @@ Each rating is turned into a number (left −2, lean left −1, center 0, lean r
 | between −0.5 and 0.5 | center |
 | 0.5 or higher | right |
 
-The raters and their individual labels are shown on the site next to the outlet, so readers can see where the label came from and where raters disagree.
+The raters and their individual labels are shown on the site next to the outlet, each linking to its rating page with the day it was checked, so readers can see where the label came from and where raters disagree. AllSides ratings are used under its CC BY-NC 4.0 license, and the site credits AllSides wherever one is shown.
 
 Sources without cited `ratings` carry a hand-set `lean`; these labels are provisional. A rating proposal must include the service, rating URL, original label, and date checked in its PR. Do not fabricate or imply completed verification. The intended review cadence is quarterly; record each actual review date. See [governance](governance.md) for challenges and decisions.
 

@@ -176,11 +176,12 @@ So today a three-outlet story on the left is dropped and the same story on the r
 - **Still open:** fetching more than once a day, so shallow feeds don't make stories look one-sided. Two runs a day (L12) do this once the job is on.
 - **Done when:** fetching is fixed, and the labels hold up on a normal week.
 
-### T2. Cited ratings for every outlet ⬜ M
+### T2. Cited ratings for every outlet 🟡 M
 
-- **Exists:** `ratings` support in `sources.yaml`, the averaging rule in `docs/labeling.md`, and the site showing raters.
-- **Gaps:** no outlet has a `ratings` entry. Every label is a hand-set starting assumption.
-- **Needs a person:** D4 is decided (AllSides first). Open each AllSides link noted in `sources.yaml` in a browser, confirm the label, then move it into `ratings` with the URL and the date checked. The original 10 outlets need the same check. Add Ad Fontes and Media Bias/Fact Check once they give permission.
+- **Built (2026-11-15):** a rating in `sources.yaml` carries the service's label, the address of its rating page and the day it was checked. The Outlets table links each rating to its page with that date, and credits AllSides under its license. The averaging rule is in `docs/labeling.md`.
+- **Gaps:** no outlet has a `ratings` entry yet. Every label is a hand-set starting assumption.
+- **Needs a person:** AllSides answers automated requests with 403 and its `robots.txt` asks that its pages not be used as AI input, so a person has to open each page in a browser. The checklist is in issue #18. Add Ad Fontes and Media Bias/Fact Check once they give permission (D4).
+- **Expect:** an outlet whose AllSides label differs from its starting label changes side, which moves the balance weights. The pull request that adds the ratings should compare the same day's edition before and after.
 - **Done when:** every outlet has cited ratings, and disagreements between raters show on the site.
 
 ### T3. A larger, balanced source list 🟡 M

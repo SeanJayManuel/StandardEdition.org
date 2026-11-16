@@ -50,6 +50,26 @@ def test_ratings_override_starting_label(tmp_path):
     assert s["x"].lean == "right" and s["x"].ratings == {"raterA": "center", "raterB": "lean right"}
 
 
+def test_a_rating_can_carry_its_page_and_the_day_it_was_checked(tmp_path):
+    s = write_sources(tmp_path, "  - {id: x, name: X, url: x, lean: center, type: national, ratings: {"
+                                "AllSides: {label: Lean Left, url: 'https://example.test/x', checked: 2026-11-15}, "
+                                "raterB: left}}\n")
+    assert s["x"].lean == "left" and s["x"].ratings == {"AllSides": "Lean Left", "raterB": "left"}
+    assert s["x"].rating_sources == {"AllSides": {"url": "https://example.test/x", "checked": "2026-11-15"}}
+    assert s["x"].record()["rating_sources"] == s["x"].rating_sources
+
+
+@pytest.mark.parametrize("rating, missing", [
+    ("{label: center, checked: 2026-11-15}", "rating page"),
+    ("{label: center, url: 'http://example.test/x', checked: 2026-11-15}", "rating page"),
+    ("{label: center, url: 'https://example.test/x'}", "date it was checked"),
+    ("{label: center, url: 'https://example.test/x', checked: last week}", "date it was checked"),
+])
+def test_a_cited_rating_needs_its_page_and_a_real_date(tmp_path, rating, missing):
+    with pytest.raises(ValueError, match=missing):
+        write_sources(tmp_path, f"  - {{id: x, name: X, url: x, type: national, ratings: {{r: {rating}}}}}\n")
+
+
 def test_bad_rating_label_is_rejected(tmp_path):
     with pytest.raises(ValueError):
         write_sources(tmp_path, "  - {id: x, name: X, url: x, type: national, ratings: {r: far-left}}\n")
