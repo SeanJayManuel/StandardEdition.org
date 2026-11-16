@@ -10,10 +10,10 @@ from pathlib import Path
 
 import pytest
 
-from boringnews import config, ledger
-from boringnews.export_static import main as export_main
-from boringnews.pipeline import main as pipeline_main
-from boringnews.topics import TOPICS
+from standardedition import config, ledger
+from standardedition.export_static import main as export_main
+from standardedition.pipeline import main as pipeline_main
+from standardedition.topics import TOPICS
 
 NODE = shutil.which("node")
 BASE = "https://example.org"

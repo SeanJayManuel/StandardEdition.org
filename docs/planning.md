@@ -71,7 +71,7 @@ Goal: a real edition, published on schedule every day, that the maintainer would
 
 ### L4. Verify every live source 🟡 S
 
-- **Exists:** `python -m boringnews.pipeline check-feeds`, and tests for the failure paths. Checked live on 2026-11-05: 14 of 16 sources work.
+- **Exists:** `python -m standardedition.pipeline check-feeds`, and tests for the failure paths. Checked live on 2026-11-05: 14 of 16 sources work.
 - **Gaps:**
   - `wsj-world` was removed on 2026-11-13: its newest item was from January 2025. Dow Jones's new feed may be for personal use only.
   - CBC News (World) was tried on 2026-11-13 and left off: it closes the connection for our user agent, though it answers browsers.
@@ -102,14 +102,14 @@ Goal: a real edition, published on schedule every day, that the maintainer would
 ### L8. Failure handling and alerts 🟡 S
 
 - **Built:** Today says when an edition is two or more days old, when feeds couldn't be read and when a story was corrected. On a day the pipeline fails, the last good edition stays up with a "This edition is out of date" banner (D5).
-- **Built (2026-11-15):** the scheduled job opens a GitHub issue, or comments on the open one, when a job fails or the edition looks thin. Thin means more than a quarter of feeds unreadable, fewer than five stories, or any story written by the fallback writer (`boringnews/health.py`). A thin edition is still published.
+- **Built (2026-11-15):** the scheduled job opens a GitHub issue, or comments on the open one, when a job fails or the edition looks thin. Thin means more than a quarter of feeds unreadable, fewer than five stories, or any story written by the fallback writer (`standardedition/health.py`). A thin edition is still published.
 - **Gaps:** it hasn't fired on a real run, because the scheduled job is still off. Nothing notices a run GitHub never starts, apart from the banner.
 - **Done when:** a real failed or thin run has raised an issue, and the maintainer got the notification.
 
 ### L9. Launch legal check 🟡 S
 
 - **Exists:** summaries only, with links out, and a rule against republishing full articles.
-- **Gaps:** each outlet's feed terms haven't been read. The README and `LICENSES/` specify documentation licensing and third-party boundaries. The About page has a contact section with public issues, and shows a private address once `BN_CONTACT_EMAIL` is set, but the mailbox is on hold for now, so public issues are the only route.
+- **Gaps:** each outlet's feed terms haven't been read. The README and `LICENSES/` specify documentation licensing and third-party boundaries. The About page has a contact section with public issues, and shows a private address once `SE_CONTACT_EMAIL` is set, but the mailbox is on hold for now, so public issues are the only route.
 - **Needs a person:** review the terms, take legal advice if in doubt, and decide when to set up the mailbox.
 - **Done when:** each outlet's terms have been checked, and the site has a contact route.
 
@@ -223,7 +223,7 @@ So today a three-outlet story on the left is dropped and the same story on the r
 The thesis rests on sources agreeing independently, so agreement should only count when the sources are separate.
 
 - **Exists:** a fact is stated plainly when two outlets agree, and the outlets' leans are counted across the spectrum.
-- **Built (2026-11-05):** `boringnews/reposts.py` finds articles that repeat another outlet's report. The story page says so, each edition file records it, and the writer is told a repeat isn't a second source.
+- **Built (2026-11-05):** `standardedition/reposts.py` finds articles that repeat another outlet's report. The story page says so, each edition file records it, and the writer is told a repeat isn't a second source.
 - **Gaps:** repeats still count toward a story's score, because changing that is a rubric change. Detection only compares headlines and feed snippets, and it hasn't been measured on real wire copy. Outlets with the same owner still count separately: The Hill and NewsNation are both owned by Nexstar. That needs ownership data (T8).
 - **Done when:** a fact repeated from one wire report counts as one source in the score, and so do two outlets with one owner.
 
@@ -240,7 +240,7 @@ Readers of commercial comparison sites can see who owns an outlet. It also fixes
 
 Decided on 2026-11-15 (D16): an open-source model fits the project better than a closed one, because readers could then inspect and run every part of the edition.
 
-- **Exists:** summaries and fact checks use Claude Haiku 5.5. The pipeline already accepts any OpenAI-compatible server (`BN_WRITER_URL`, `BN_WRITER_MODEL`), so a local model needs no new code to try.
+- **Exists:** summaries and fact checks use Claude Haiku 5.5. The pipeline already accepts any OpenAI-compatible server (`SE_WRITER_URL`, `SE_WRITER_MODEL`), so a local model needs no new code to try.
 - **Gaps:** which model, and where it runs. A model has to follow the style guide, return the structured reply, and quote sources accurately for the fact check. The scheduled job runs on GitHub's hosted runners, which have no GPU, so the model needs either a hosted open-model service or a small model that runs on a CPU in reasonable time. Cost goes in the ledger either way.
 - **How to compare:** write the same week of editions with both models, and read them against their sources, as in L5.
 - **Done when:** an open-source model writes and checks the published edition, and the comparison is published.
@@ -442,7 +442,7 @@ Goal: journalists and researchers can use the data without asking.
 
 ### O4. Better grouping 🟡 M
 
-- **Exists:** sentence embeddings with a shared-name check and average linkage, with a word-based fallback. `BN_EMBEDDING_SIMILARITY` and `BN_WORD_SIMILARITY` configure the two methods.
+- **Exists:** sentence embeddings with a shared-name check and average linkage, with a word-based fallback. `SE_EMBEDDING_SIMILARITY` and `SE_WORD_SIMILARITY` configure the two methods.
 - **Tested (2026-11-05):** sentence embeddings with a shared-name check and average linkage, at 0.60, gave no wrong multi-outlet groups and 16 clean ones, against 4 that would publish wrongly and 9 clean today. Embeddings alone are worse, merging by topic. They find about the same number of matches as word matching, so the gain is fewer wrong stories.
 - **Cost:** about 110 MB of packages, a 90 MB model to cache in CI, and seconds to run. If that's too much, average linkage on word matching at 0.14 needs no new dependency and separates the Johnson and Jeffries stories, but it leaves wrong multi-outlet groups.
 - **Gaps:** 0.60 was picked on one unusual day, so test it on a normal week first. It also won't link stories with no shared name, and same-official-source rules were barely exercised.

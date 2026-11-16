@@ -1,8 +1,8 @@
 // The Standard Edition core: the selection rubric, reader settings and RSS output.
 // One copy, used by the reader page (inlined before app.js) and by the
 // Cloudflare Pages function that serves custom feeds (functions/feed.xml.js).
-// Python uses it too, for ready-made feeds (boringnews/reader.py). The only rules
-// that also exist in Python are the score and lane (boringnews/rubric.py), because
+// Python uses it too, for ready-made feeds (standardedition/reader.py). The only rules
+// that also exist in Python are the score and lane (standardedition/rubric.py), because
 // the pipeline needs them; tests/test_parity.py checks that both agree.
 (function (root) {
   "use strict";
@@ -422,7 +422,7 @@
     return "/editions/" + encodeURIComponent(date) + "/stories/" + encodeURIComponent(id) + "/";
   }
 
-  root.BoringCore = {
+  root.EditionCore = {
     storyPath: storyPath,
     create: create, DEFAULTS: DEFAULTS, SETTINGS: SETTINGS, SPECTRUM: SPECTRUM,
     WEIGHT_PARTS: WEIGHT_PARTS, REASONS: REASONS,

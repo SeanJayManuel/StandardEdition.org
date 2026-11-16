@@ -22,9 +22,9 @@
   // Light by default. Dark only if the reader chose it here, or the host app asks for it.
   (function () {
     var t = null;
-    try { t = localStorage.getItem("boringnews.theme"); } catch (e) {}
+    try { t = localStorage.getItem("standardedition.theme") || localStorage.getItem("boringnews.theme"); } catch (e) {}
     if (!t && document.documentElement.getAttribute("data-theme") === "dark") t = "dark";
-    if (t === "dark") document.documentElement.classList.add("bn-dark");
+    if (t === "dark") document.documentElement.classList.add("theme-dark");
   })();
 </script>
 <style>
@@ -328,7 +328,7 @@
       <p>All of the Standard Edition is open source. To change the rules for everyone who reads your copy, fork the code and edit three files:</p>
       <ul>
         <li><code translate="no">sources.yaml</code> lists every outlet and official source, with its lean. Add, remove or relabel them.</li>
-        <li><code translate="no">boringnews/rubric.py</code> holds the weights and thresholds shown in How it works.</li>
+        <li><code translate="no">standardedition/rubric.py</code> holds the weights and thresholds shown in How it works.</li>
         <li><code translate="no">editorial/style_guide.md</code> holds the writing rules the summaries follow, and <code translate="no">editorial/banned_words.txt</code> lists the words the checker rejects.</li>
       </ul>
       <p>The code is on <a id="repo-link" href="#">GitHub</a>. Changes to the rules are made in public commits, so you can see when and why anything changed.</p>
@@ -456,7 +456,7 @@
 </footer>
 
 <script>
-window.BORING_NEWS = "__DATA__";
+window.STANDARD_EDITION = "__DATA__";
 </script>
 <script>
 /*__CORE__*/

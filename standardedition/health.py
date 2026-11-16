@@ -1,7 +1,7 @@
 """Is the newest edition thin? The scheduled job runs this after building, and
 raises an alert when it prints anything. A thin edition is still published.
 
-    python -m boringnews.health              # the newest file in archive/
+    python -m standardedition.health              # the newest file in archive/
 """
 
 from __future__ import annotations
@@ -37,7 +37,7 @@ def newest(directory: Path) -> Path | None:
 
 
 def main(argv=None) -> int:
-    ap = argparse.ArgumentParser(prog="boringnews.health")
+    ap = argparse.ArgumentParser(prog="standardedition.health")
     ap.add_argument("--archive", default=str(config.ARCHIVE_DIR))
     args = ap.parse_args(argv)
     path = newest(Path(args.archive))

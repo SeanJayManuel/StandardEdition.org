@@ -4,17 +4,17 @@ import json
 import shutil
 import subprocess
 
-from boringnews import config, research
-from boringnews.db import connect
-from boringnews.pipeline import main as pipeline_main
-from boringnews.sources import load_sources
+from standardedition import config, research
+from standardedition.db import connect
+from standardedition.pipeline import main as pipeline_main
+from standardedition.sources import load_sources
 
 NODE = shutil.which("node")
 
 RESEARCH_RUNNER = r"""
 require(process.argv[2]);
 const idx = JSON.parse(require("fs").readFileSync(process.argv[3], "utf8"));
-const R = globalThis.BoringCore.research;
+const R = globalThis.EditionCore.research;
 const q = (s) => R.lookup(idx, s).matches.map(m => m.story.headline);
 console.log(JSON.stringify({
   claim: q("Judge blocked the voter ID rule"),

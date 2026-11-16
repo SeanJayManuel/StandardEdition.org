@@ -4,12 +4,12 @@ import json
 
 import pytest
 
-from boringnews import archive, config, rubric, threads
-from boringnews.db import Article, Story, connect, editions, load_edition, load_extra
-from boringnews.edition import FORMAT
-from boringnews.pipeline import main as pipeline_main
-from boringnews.rewrite import Draft, check_facts, numbers
-from boringnews.sources import lean_from_ratings, load_sources
+from standardedition import archive, config, rubric, threads
+from standardedition.db import Article, Story, connect, editions, load_edition, load_extra
+from standardedition.edition import FORMAT
+from standardedition.pipeline import main as pipeline_main
+from standardedition.rewrite import Draft, check_facts, numbers
+from standardedition.sources import lean_from_ratings, load_sources
 
 SOURCES = load_sources(config.FIXTURE_SOURCES_PATH)
 
@@ -205,7 +205,7 @@ def test_developing_story_continues_across_days(tmp_path):
 
 # ---------------------------------------------------------------- market ticker
 
-from boringnews import markets
+from standardedition import markets
 
 
 def test_fred_parsing_skips_missing_days():

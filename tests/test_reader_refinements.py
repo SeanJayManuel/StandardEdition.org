@@ -3,8 +3,8 @@ import json
 import subprocess
 from pathlib import Path
 
-from boringnews import config
-from boringnews.render import render_page
+from standardedition import config
+from standardedition.render import render_page
 from tests.test_published_site import site, edition  # shared fixture, exported through the real pipeline
 
 
@@ -20,8 +20,8 @@ const src=(name,lean='center')=>({name,lean,type:'national'});
 const old={read:src('Read'),down:src('Failed'),removed:src('Removed')};
 const current={read:old.read,down:old.down,added:src('New')};
 const st={date:'2026-01-01',articles:[{source_id:'read'}]};
-const c=BoringCore.research.coverageContext({editions:{'2026-01-01':{sources:old,coverage_known:true,feeds_down:['down']}}},st,current);
-const unknown=BoringCore.research.coverageContext({},st,current);
+const c=EditionCore.research.coverageContext({editions:{'2026-01-01':{sources:old,coverage_known:true,feeds_down:['down']}}},st,current);
+const unknown=EditionCore.research.coverageContext({},st,current);
 console.log(JSON.stringify({c,unknown}));
 ''')
     assert result['c']['not_observed'] == ['removed']

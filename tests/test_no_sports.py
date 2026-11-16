@@ -3,12 +3,12 @@ shapes real feeds use (The Guardian, the New York Post, CBS); all the text is in
 
 import json
 
-from boringnews import archive, config, rubric
-from boringnews.db import Article, connect, load_edition
-from boringnews.edition import FORMAT
-from boringnews.inputs import FixtureInputs
-from boringnews.pipeline import run
-from boringnews.sources import load_sources
+from standardedition import archive, config, rubric
+from standardedition.db import Article, connect, load_edition
+from standardedition.edition import FORMAT
+from standardedition.inputs import FixtureInputs
+from standardedition.pipeline import run
+from standardedition.sources import load_sources
 
 SOURCES = load_sources(config.FIXTURE_SOURCES_PATH)
 DATE = "2026-11-04"

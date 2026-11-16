@@ -62,7 +62,7 @@
   --gutter: 32px;
   color-scheme: light;
 }
-:root.bn-dark {
+:root.theme-dark {
   --desk: #212226;
   --sheet: #2b2c31;
   --ink: #ecebe6;

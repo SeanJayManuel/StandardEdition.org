@@ -12,10 +12,10 @@ from pathlib import Path
 
 import pytest
 
-from boringnews import config
-from boringnews.edition import FORMAT
-from boringnews.export_static import main as export_main
-from boringnews.pipeline import main as pipeline_main
+from standardedition import config
+from standardedition.edition import FORMAT
+from standardedition.export_static import main as export_main
+from standardedition.pipeline import main as pipeline_main
 
 NODE = shutil.which("node")
 BASE = "https://example.org"

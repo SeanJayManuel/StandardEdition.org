@@ -6,9 +6,9 @@ import itertools
 
 import pytest
 
-from boringnews import config, rubric
-from boringnews.edition import Edition
-from boringnews.sources import load_sources
+from standardedition import config, rubric
+from standardedition.edition import Edition
+from standardedition.sources import load_sources
 
 from .core import run_core
 

@@ -11,8 +11,8 @@ from pathlib import Path
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from boringnews.pipeline import main as pipeline
-from boringnews.export_static import main as export
+from standardedition.pipeline import main as pipeline
+from standardedition.export_static import main as export
 
 
 def main():

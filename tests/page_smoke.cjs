@@ -20,7 +20,7 @@ const fetched = [];
 const dom = new JSDOM(html, {
   url, runScripts: "dangerously", pretendToBeVisual: true, virtualConsole: vc,
   beforeParse(window) {
-    if (saved !== undefined) window.localStorage.setItem("boringnews.prefs.v3", saved);
+    if (saved !== undefined) window.localStorage.setItem("standardedition.prefs.v3", saved);
     window.scrollTo = () => {};
     window.HTMLElement.prototype.scrollIntoView = function () { scrolledTo = this; };
     window.fetch = (file) => {
@@ -124,7 +124,7 @@ async function main() {
     summaries: document.querySelectorAll("#spotlight .what, #spot-rest .what").length,
     gapSides,
     oneSide,
-    settings: dom.window.BoringCore.SETTINGS.map((x) => x.name),
+    settings: dom.window.EditionCore.SETTINGS.map((x) => x.name),
     loaded,
     strict,
     anchoredLeftOut: document.querySelectorAll(".left-out [id^='story-']").length,
@@ -174,7 +174,7 @@ async function main() {
   report.named = see();
   byId("copy-recipe").click();
   report.copyStatus = text(byId("recipe-status"));
-  report.savedQuery = dom.window.localStorage.getItem("boringnews.prefs.v3");
+  report.savedQuery = dom.window.localStorage.getItem("standardedition.prefs.v3");
   byId("reset").click();
   report.reset = see();
   report.undoOffered = !byId("undo-reset").hidden;

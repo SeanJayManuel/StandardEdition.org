@@ -38,7 +38,7 @@ jobs:
       - run: npm ci
       - run: npm run check
       - name: Rebuild the database from past editions
-        run: python -m boringnews.archive restore
+        run: python -m standardedition.archive restore
       - uses: actions/cache@v4
         with:
           path: data/models
@@ -48,12 +48,12 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           CONGRESS_API_KEY: ${{ secrets.CONGRESS_API_KEY }}
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
-          BN_BASE_URL: https://standardedition.org
-        run: python -m boringnews.pipeline run --require-writer
+          SE_BASE_URL: https://standardedition.org
+        run: python -m standardedition.pipeline run --require-writer
       - name: Check the edition for thin coverage
         id: health
         run: |
-          python -m boringnews.health > health.md
+          python -m standardedition.health > health.md
           cat health.md
           {
             echo 'thin<<END_OF_HEALTH'
@@ -62,8 +62,8 @@ jobs:
           } >> "$GITHUB_OUTPUT"
       - name: Export the site
         env:
-          BN_BASE_URL: https://standardedition.org
-        run: python -m boringnews.export_static --out site
+          SE_BASE_URL: https://standardedition.org
+        run: python -m standardedition.export_static --out site
       - name: Stage the complete publication
         run: |
           mkdir -p publication/web

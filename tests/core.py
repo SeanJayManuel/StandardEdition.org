@@ -4,7 +4,7 @@ import json
 import shutil
 import subprocess
 
-from boringnews import config
+from standardedition import config
 
 
 def run_core(data: dict, queries=(), scores=(), index=None, threads=()) -> dict:

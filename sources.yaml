@@ -7,7 +7,7 @@
 # (e.g. AllSides, Ad Fontes). They are editable on purpose and are published
 # on the "How we choose" page. Review quarterly.
 #
-# Feed URLs are unverified until `python -m boringnews.pipeline check-feeds`
+# Feed URLs are unverified until `python -m standardedition.pipeline check-feeds`
 # reports them healthy. Reuters and AP do not offer public RSS feeds.
 
 sources:

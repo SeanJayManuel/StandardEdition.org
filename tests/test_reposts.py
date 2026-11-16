@@ -1,9 +1,9 @@
 """Repeated reports, what each side reported, and how both reach the writer."""
 
-from boringnews.db import Article
-from boringnews.reposts import reposts
-from boringnews.rewrite import Draft, _parse, _to_draft, build_prompt, check_facts, lint_draft
-from boringnews.sources import Source
+from standardedition.db import Article
+from standardedition.reposts import reposts
+from standardedition.rewrite import Draft, _parse, _to_draft, build_prompt, check_facts, lint_draft
+from standardedition.sources import Source
 
 LONG = "The mayor declared a local emergency after a storm surge flooded downtown and cut power to about 18,000 customers."
 

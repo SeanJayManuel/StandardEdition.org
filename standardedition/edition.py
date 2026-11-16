@@ -98,7 +98,7 @@ class Edition:
         """The edition for `date`, or the latest one."""
         dates = db.editions(conn)
         if not dates:
-            raise NoEdition("No editions yet. Run: python -m boringnews.pipeline run")
+            raise NoEdition("No editions yet. Run: python -m standardedition.pipeline run")
         date = date or dates[0]
         if date not in dates:
             raise NoEdition(f"No edition for {date}")

@@ -1,7 +1,7 @@
 // Evidence presentation is shared by the reader views. It never infers support.
 (function (root) {
   "use strict";
-  root.BoringEvidence = { create: function (D, el, $, plural) {
+  root.EditionEvidence = { create: function (D, el, $, plural) {
   function provenance(s) {
     var writer = s.written_by || "";
     var text = !writer ? "Summary provenance was not recorded in this edition."

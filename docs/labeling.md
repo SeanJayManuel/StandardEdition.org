@@ -1,6 +1,6 @@
 # How sources are chosen and labeled
 
-This is the plain-language version of [`sources.yaml`](../sources.yaml) and [`boringnews/sources.py`](../boringnews/sources.py). Any change to how sources are labeled or weighted must update this file in the same commit.
+This is the plain-language version of [`sources.yaml`](../sources.yaml) and [`standardedition/sources.py`](../standardedition/sources.py). Any change to how sources are labeled or weighted must update this file in the same commit.
 
 ## What every source records
 
@@ -50,7 +50,7 @@ Use the [source form](https://github.com/SeanJayManuel/StandardEdition.org/issue
 
 1. Why the source should be included (or removed)
 2. Where its lean label comes from, with links to the ratings
-3. That `python -m boringnews.pipeline check-feeds` reports its feed as healthy
+3. That `python -m standardedition.pipeline check-feeds` reports its feed as healthy
 
 ## Known gaps
 

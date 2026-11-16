@@ -4,7 +4,7 @@ let input = "";
 process.stdin.on("data", (chunk) => { input += chunk; });
 process.stdin.on("end", () => {
   const { data, queries = [], scores = [], index = null, threads = [] } = JSON.parse(input);
-  const C = globalThis.BoringCore.create(data);
+  const C = globalThis.EditionCore.create(data);
   console.log(JSON.stringify({
     selections: queries.map((q) => {
       const p = C.fromQuery("?" + q);
@@ -22,8 +22,8 @@ process.stdin.on("end", () => {
       };
     }),
     recipes: C.recipes(),
-    reasons: globalThis.BoringCore.REASONS,
-    threads: threads.map(([date, id]) => globalThis.BoringCore.research.earlier(index, date, id)),
+    reasons: globalThis.EditionCore.REASONS,
+    threads: threads.map(([date, id]) => globalThis.EditionCore.research.earlier(index, date, id)),
     scores: scores.map((ids) => {
       const sc = C.score(ids);
       sc.lanes = {};

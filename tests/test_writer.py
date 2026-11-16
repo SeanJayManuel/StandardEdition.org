@@ -7,11 +7,11 @@ from types import SimpleNamespace
 
 import pytest
 
-from boringnews import config
-from boringnews.db import Article
-from boringnews.pipeline import pick_writer
-from boringnews.rewrite import ClaudeWriter, FailedReply, LocalWriter, MockWriter, load_banned, write_story
-from boringnews.sources import load_sources
+from standardedition import config
+from standardedition.db import Article
+from standardedition.pipeline import pick_writer
+from standardedition.rewrite import ClaudeWriter, FailedReply, LocalWriter, MockWriter, load_banned, write_story
+from standardedition.sources import load_sources
 
 SOURCES = load_sources(config.FIXTURE_SOURCES_PATH)
 BANNED = load_banned(config.BANNED_WORDS_PATH)
@@ -245,22 +245,22 @@ def test_mock_writer_goes_through_the_same_parsing():
 
 def test_no_key_means_the_fallback_writer(monkeypatch):
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
-    monkeypatch.delenv("BN_WRITER_URL", raising=False)
+    monkeypatch.delenv("SE_WRITER_URL", raising=False)
     assert pick_writer(False) is None
 
 
 def test_writer_url_wins_over_an_anthropic_key(monkeypatch):
     monkeypatch.setenv("ANTHROPIC_API_KEY", "x")
-    monkeypatch.setenv("BN_WRITER_URL", "http://localhost:8080")
-    monkeypatch.setenv("BN_WRITER_MODEL", "gemma")
+    monkeypatch.setenv("SE_WRITER_URL", "http://localhost:8080")
+    monkeypatch.setenv("SE_WRITER_MODEL", "gemma")
     w = pick_writer(False)
     assert isinstance(w, LocalWriter) and w.model == "gemma"
 
 
 def test_writer_url_without_a_model_stops_rather_than_publishing_a_blank_name(monkeypatch):
-    monkeypatch.setenv("BN_WRITER_URL", "http://localhost:8080")
-    monkeypatch.delenv("BN_WRITER_MODEL", raising=False)
-    with pytest.raises(SystemExit, match="BN_WRITER_MODEL"):
+    monkeypatch.setenv("SE_WRITER_URL", "http://localhost:8080")
+    monkeypatch.delenv("SE_WRITER_MODEL", raising=False)
+    with pytest.raises(SystemExit, match="SE_WRITER_MODEL"):
         pick_writer(False)
 
 

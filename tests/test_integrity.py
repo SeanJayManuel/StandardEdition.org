@@ -4,11 +4,11 @@ from datetime import datetime, timezone
 
 import pytest
 
-from boringnews import db, research
-from boringnews.edition import Edition, restore
-from boringnews.ingest import congress_items
-from boringnews.rewrite import Draft, check_facts
-from boringnews.sources import Source
+from standardedition import db, research
+from standardedition.edition import Edition, restore
+from standardedition.ingest import congress_items
+from standardedition.rewrite import Draft, check_facts
+from standardedition.sources import Source
 
 SOURCES = {'wire': Source('wire', 'Wire', '', 'center', 'wire'),
            'gov': Source('gov', 'Congress', '', 'unrated', 'primary', role='record')}
@@ -178,3 +178,13 @@ def test_duplicate_feed_urls_share_one_archive_identity(tmp_path):
     assert db.upsert_articles(conn, [first, other_feed]) == 1
     articles = db.articles_between(conn, '2026-11-01', '2026-11-02')
     assert len({a.key for a in articles}) == len(articles)
+
+
+def test_a_setting_under_the_old_name_stops_the_run():
+    """Settings were BN_... before the rename. An old name must not be silently ignored."""
+    import os
+    import subprocess
+    import sys
+    env = {**os.environ, "BN_BASE_URL": "https://example.test"}
+    out = subprocess.run([sys.executable, "-c", "import standardedition.config"], env=env, capture_output=True, text=True)
+    assert out.returncode != 0 and "SE_, not BN_" in out.stderr and "BN_BASE_URL" in out.stderr

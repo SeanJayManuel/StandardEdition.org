@@ -2,7 +2,7 @@
 import json
 from html.parser import HTMLParser
 
-from boringnews import render
+from standardedition import render
 
 
 SNAPSHOT = {
@@ -43,19 +43,19 @@ def test_archive_index_and_edition_link_to_durable_pages():
 
 def test_versioned_article_references_and_claim_evidence_are_preserved():
     snapshot = json.loads(json.dumps(SNAPSHOT))
-    snapshot["articles"][0]["key"] = "https://example.org/report#bn-event-signed"
+    snapshot["articles"][0]["key"] = "https://example.org/report#edition-event-signed"
     snapshot["stories"][0]["articles"] = [snapshot["articles"][0]["key"]]
     snapshot["stories"][0]["checks"]["claims"] = [{"text": "A durable fact.", "status": "model-supported", "sources": [{"source_id": "old", "url": "https://example.org/report", "quote": "The original quoted evidence."}]}]
     page = render.render_archived_story(snapshot, snapshot["stories"][0], "https://news.example")
     assert "Original report" in page
     assert "The original quoted evidence." in page
     assert 'href="https://example.org/report"' in page
-    assert '#bn-event-' not in page
+    assert '#edition-event-' not in page
 
 
 def test_export_retains_pages_older_than_research_and_copies_fonts(tmp_path):
-    from boringnews.pipeline import main as run
-    from boringnews.export_static import main as export
+    from standardedition.pipeline import main as run
+    from standardedition.export_static import main as export
     archive, db, site = tmp_path / "archive", tmp_path / "data.db", tmp_path / "site"
     run(["run", "--fixtures", "--mock-llm", "--date", "2026-11-04", "--db", str(db), "--archive", str(archive)])
     (archive / "2025-01-02.json").write_text(json.dumps({**SNAPSHOT, "format": 2}))
@@ -72,7 +72,7 @@ def test_export_retains_pages_older_than_research_and_copies_fonts(tmp_path):
 
 def test_local_preview_serves_archived_story_without_restoring_database(tmp_path, monkeypatch):
     from fastapi.testclient import TestClient
-    from boringnews import config, web
+    from standardedition import config, web
     archive = tmp_path / "archive"
     archive.mkdir()
     (archive / "2025-01-02.json").write_text(json.dumps(SNAPSHOT))

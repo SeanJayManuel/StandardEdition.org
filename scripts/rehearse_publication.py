@@ -13,10 +13,10 @@ import sys
 import tempfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from boringnews import config
-from boringnews.archive import main as restore
-from boringnews.export_static import main as export
-from boringnews.pipeline import main as pipeline
+from standardedition import config
+from standardedition.archive import main as restore
+from standardedition.export_static import main as export
+from standardedition.pipeline import main as pipeline
 
 BASE_URL = 'https://rehearsal.invalid'
 

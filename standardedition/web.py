@@ -1,6 +1,6 @@
 """The reader site.
 
-    uvicorn boringnews.web:app --reload
+    uvicorn standardedition.web:app --reload
 
 Routes
     /                       today's edition (or ?date=YYYY-MM-DD); settings read from the query string
@@ -25,7 +25,7 @@ from .reader import feeds
 from .render import load_corrections, render_page
 from .sources import load_sources
 
-SAMPLE = os.environ.get("BN_SAMPLE") == "1"
+SAMPLE = os.environ.get("SE_SAMPLE") == "1"
 app = FastAPI(title="Standard Edition", docs_url=None, redoc_url=None)
 app.mount("/brand", StaticFiles(directory=config.ROOT / "web" / "brand"), name="brand")
 
