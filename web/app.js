@@ -659,15 +659,22 @@
     tb.innerHTML = "";
     Object.keys(D.sources).sort(function (a, b) { return D.sources[a].name.localeCompare(D.sources[b].name); }).forEach(function (id) {
       var s = D.sources[id];
-      var raters = s.ratings && Object.keys(s.ratings).length
-        ? Object.keys(s.ratings).map(function (r) { return r + ": " + s.ratings[r]; }).join("; ")
-        : (s.type === "primary" ? "" : "Starting label");
+      // A rating read on its own page links there and gives the day it was checked.
+      var raters = [];
+      Object.keys(s.ratings || {}).forEach(function (r, i) {
+        var at = (s.rating_sources || {})[r], words = r + ": " + s.ratings[r];
+        if (i) raters.push("; ");
+        raters.push(at ? el("a", { href: at.url, rel: "noopener", text: words }) : words);
+        if (at) raters.push(" (checked " + shortDate(at.checked) + ")");
+      });
+      if (!raters.length && s.type !== "primary") raters.push("Starting label");
       tb.appendChild(el("tr", {}, [el("td", { text: s.name }),
         el("td", { text: s.type === "primary" ? "Not rated" : cap(s.lean) }),
-        el("td", { text: raters }),
+        el("td", {}, raters),
         el("td", { text: s.type === "primary" ? "" : (s.weight || 1).toFixed(2) + " outlets" }),
         el("td", { text: s.type !== "primary" ? cap(s.type) : (s.role === "record" ? "Government record" : "Government statement") })]));
     });
+    $("rating-credit").hidden = !Object.keys(D.sources).some(function (id) { return (D.sources[id].ratings || {}).AllSides; });
     var cbox = $("corrections");
     cbox.innerHTML = "";
     if (D.corrections && D.corrections.length) {

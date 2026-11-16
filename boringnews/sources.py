@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field, replace
+from datetime import date
 from pathlib import Path
 
 import yaml
@@ -44,23 +45,48 @@ class Source:
     max_items: int | None = None  # cap per edition (official sources can be very busy)
     role: str | None = None       # official sources only: record or statement
     ratings: dict = field(default_factory=dict, hash=False, compare=False)  # rater -> label
+    # rater -> {"url", "checked"}: the rating page, and the day a person read it there.
+    rating_sources: dict = field(default_factory=dict, hash=False, compare=False)
     weight: float = 1.0           # coverage weight; balances sides with more outlets on the list
     params: dict = field(default_factory=dict, hash=False, compare=False)
 
     def record(self) -> dict:
         """What's published about a source, on the page and in edition files."""
         return {"name": self.name, "lean": self.lean, "type": self.type, "role": self.role,
-                "weight": self.weight, "ratings": self.ratings}
+                "weight": self.weight, "ratings": self.ratings, "rating_sources": self.rating_sources}
+
+
+def read_ratings(source_id: str, raw: dict) -> tuple[dict, dict]:
+    """A source's ratings as (rater -> label, rater -> where it was read).
+    A rating is a bare label, or a label with the page it came from and the day
+    it was checked:
+
+        ratings:
+          AllSides: {label: lean left, url: https://..., checked: 2026-11-15}
+    """
+    labels, cited = {}, {}
+    for rater, value in raw.items():
+        label = value.get("label") if isinstance(value, dict) else value
+        if str(label).lower() not in RATING_SCALE:
+            raise ValueError(f"{source_id}: rating {rater}={label!r} must be one of {list(RATING_SCALE)}")
+        labels[rater] = label
+        if isinstance(value, dict):
+            url, checked = str(value.get("url") or ""), str(value.get("checked") or "")
+            if not url.startswith("https://"):
+                raise ValueError(f"{source_id}: rating {rater} needs the https address of its rating page")
+            try:
+                date.fromisoformat(checked)
+            except ValueError:
+                raise ValueError(f"{source_id}: rating {rater} needs the date it was checked, as YYYY-MM-DD") from None
+            cited[rater] = {"url": url, "checked": checked}
+    return labels, cited
 
 
 def load_sources(path: Path) -> dict[str, Source]:
     data = yaml.safe_load(Path(path).read_text())
     out: dict[str, Source] = {}
     for raw in data.get("sources", []):
-        ratings = raw.get("ratings") or {}
-        for rater, label in ratings.items():
-            if str(label).lower() not in RATING_SCALE:
-                raise ValueError(f"{raw['id']}: rating {rater}={label!r} must be one of {list(RATING_SCALE)}")
+        ratings, rating_sources = read_ratings(raw["id"], raw.get("ratings") or {})
         src = Source(
             id=raw["id"],
             name=raw["name"],
@@ -74,6 +100,7 @@ def load_sources(path: Path) -> dict[str, Source]:
             # Official sources must earn the record boost explicitly.
             role=(raw.get("role") or "statement") if raw.get("type") == "primary" else None,
             ratings=ratings,
+            rating_sources=rating_sources,
         )
         if src.lean not in LEANS:
             raise ValueError(f"{src.id}: unknown lean {src.lean!r} (use one of {LEANS})")

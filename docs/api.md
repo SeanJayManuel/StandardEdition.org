@@ -20,7 +20,7 @@ Everything is under `/api/v1/`. Start with the index.
 | `api/v1/index.json` | Every edition with its address, the latest date, the format versions, bulk downloads and corrections |
 | `api/v1/latest.json` | The newest edition file |
 | `api/v1/editions/YYYY-MM-DD.json` | One edition file per day |
-| `api/v1/sources.json` | Every outlet and government source (name, lean, type, role, weight, ratings) and the rubric that scores coverage |
+| `api/v1/sources.json` | Every outlet and government source (name, lean, type, role, weight, ratings, and where each rating was read) and the rubric that scores coverage |
 | `api/v1/research.json` | The last 30 days of stories and government records, in one file |
 | `api/v1/bulk/YYYY-MM.zip` | Every edition file for that month |
 
