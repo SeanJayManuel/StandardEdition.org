@@ -14,7 +14,7 @@ Last updated: 2026-11-15.
 
 - **Publish on a schedule.** Turn on the scheduled job so an edition goes out twice a day without anyone running it, and alert the maintainer when a run fails.
 - **Check real editions by hand.** Read a week of editions against their sources, and tune how articles are grouped into stories.
-- **Cite a rating for every outlet.** Each outlet's left, center or right label should point to a published rating. Today the labels are starting assumptions.
+- **Cite a rating for every outlet.** Each outlet's left, center or right label should point to a published rating. So far 13 of the 25 do. The rest are starting assumptions.
 - **Review feed terms.** Confirm each outlet's terms allow its feed to be read this way.
 
 ## Next
