@@ -35,6 +35,7 @@ def test_fallback_stories_are_counted_without_their_headlines():
 def test_the_command_prints_one_line_per_problem(tmp_path, capsys):
     (tmp_path / "2026-11-01.json").write_text(json.dumps(edition()))
     (tmp_path / "2026-11-02.json").write_text(json.dumps(edition(stories=1)))
+    (tmp_path / "index.json").write_text("[]")  # not an edition file, so never the newest
     assert health.main(["--archive", str(tmp_path)]) == 0
     assert capsys.readouterr().out == "- The edition has 1 story. Fewer than 5 is unusual.\n"
 
