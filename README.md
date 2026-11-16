@@ -49,10 +49,10 @@ Any change to sources, labels, grouping, ranking or writing rules is a public co
 | Decision | Plain-language explanation | Where it lives in code |
 | --- | --- | --- |
 | Which sources are read | [`docs/labeling.md`](docs/labeling.md) | [`sources.yaml`](sources.yaml) |
-| How outlets are labeled left, center or right | [`docs/labeling.md`](docs/labeling.md) | [`boringnews/sources.py`](boringnews/sources.py) |
-| How articles are grouped into stories | [`docs/clustering.md`](docs/clustering.md) | [`boringnews/cluster.py`](boringnews/cluster.py) |
-| Which stories make the edition | [`docs/ranking.md`](docs/ranking.md) | [`boringnews/rubric.py`](boringnews/rubric.py) |
-| How stories are written | [`editorial/style_guide.md`](editorial/style_guide.md) | [`boringnews/rewrite.py`](boringnews/rewrite.py) |
+| How outlets are labeled left, center or right | [`docs/labeling.md`](docs/labeling.md) | [`standardedition/sources.py`](standardedition/sources.py) |
+| How articles are grouped into stories | [`docs/clustering.md`](docs/clustering.md) | [`standardedition/cluster.py`](standardedition/cluster.py) |
+| Which stories make the edition | [`docs/ranking.md`](docs/ranking.md) | [`standardedition/rubric.py`](standardedition/rubric.py) |
+| How stories are written | [`editorial/style_guide.md`](editorial/style_guide.md) | [`standardedition/rewrite.py`](standardedition/rewrite.py) |
 | What was wrong and fixed | [`corrections.yaml`](corrections.yaml) | |
 
 Every edition is also saved in full to [`archive/`](archive/): every article read, how they were grouped, every score, the fact-check log, and the version of the rules used that day.
@@ -155,10 +155,10 @@ python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
 # Build a demo edition from invented sample articles
-python -m boringnews.pipeline run --fixtures --mock-llm --date 2026-11-04
+python -m standardedition.pipeline run --fixtures --mock-llm --date 2026-11-04
 
 # Serve it
-BN_SAMPLE=1 uvicorn boringnews.web:app --reload
+SE_SAMPLE=1 uvicorn standardedition.web:app --reload
 # open http://localhost:8000 and http://localhost:8000/feed.xml
 ```
 
@@ -172,11 +172,11 @@ export CONGRESS_API_KEY=...                        # free: https://api.congress.
 export FRED_API_KEY=...                            # free: https://fred.stlouisfed.org/docs/api/api_key.html
 export ANTHROPIC_API_KEY=...                       # optional; without it, the fallback writer is used
 # Or use any OpenAI-compatible server (Ollama, llama.cpp) instead of a paid key:
-# export BN_WRITER_URL=http://localhost:11434 BN_WRITER_MODEL=llama3.2
-python -m boringnews.pipeline check-feeds          # which sources work, and which look stale
-python -m boringnews.pipeline run                  # today's edition, UTC
+# export SE_WRITER_URL=http://localhost:11434 SE_WRITER_MODEL=llama3.2
+python -m standardedition.pipeline check-feeds          # which sources work, and which look stale
+python -m standardedition.pipeline run                  # today's edition, UTC
 # Add --require-writer to stop rather than publish fallback stories (the nightly job does)
-uvicorn boringnews.web:app
+uvicorn standardedition.web:app
 ```
 
 ## Official sources
@@ -248,15 +248,15 @@ sources.yaml ──► ingest (RSS) ──► SQLite ──► cluster (embeddin
 | `editorial/style_guide.md` | The writing rules, sent to the model as its instructions |
 | `DESIGN.md` | Brand, voice and visual rules for everything a reader sees |
 | `editorial/banned_words.txt` | Loaded words the linter rejects outside quotes |
-| `boringnews/rubric.py` | Selection rule: breadth, coverage, diversity, thresholds |
-| `boringnews/cluster.py` | Groups articles about the same event |
-| `boringnews/rewrite.py` | Writers, the parsing, retry and lint rules for their text, fact check, no-model fallback |
-| `boringnews/inputs.py` | Where articles and market closes come from: live or the sample data |
-| `boringnews/edition.py` | One edition and all its forms: database, edition file, page data |
-| `boringnews/reader.py` | Asks `web/core.js` for RSS feeds, through node |
-| `boringnews/research.py` | The 30-day index behind the Research tab |
-| `boringnews/web.py` | Local preview, FastAPI: `/`, `/feed.xml`, `/api/edition.json` |
-| `boringnews/export_static.py` | Static site export (page, data, one feed per topic) |
+| `standardedition/rubric.py` | Selection rule: breadth, coverage, diversity, thresholds |
+| `standardedition/cluster.py` | Groups articles about the same event |
+| `standardedition/rewrite.py` | Writers, the parsing, retry and lint rules for their text, fact check, no-model fallback |
+| `standardedition/inputs.py` | Where articles and market closes come from: live or the sample data |
+| `standardedition/edition.py` | One edition and all its forms: database, edition file, page data |
+| `standardedition/reader.py` | Asks `web/core.js` for RSS feeds, through node |
+| `standardedition/research.py` | The 30-day index behind the Research tab |
+| `standardedition/web.py` | Local preview, FastAPI: `/`, `/feed.xml`, `/api/edition.json` |
+| `standardedition/export_static.py` | Static site export (page, data, one feed per topic) |
 | `web/core.js` | What readers' settings do: selection, scores, the settings list, RSS, plus the research tools. Used by the page, the feed function and Python |
 | `web/app.js` | The reader page |
 
@@ -279,13 +279,13 @@ Example: `/feed.xml?topics=economy,government&threshold=strict&exclude=ny-post`
 
 ## Settings
 
-Environment variables: `BN_DB`, `BN_SOURCES`, `BN_BASE_URL` (used in feed
-links), `BN_MODEL` (default `claude-haiku-5-5`), `BN_WRITER_URL` and
-`BN_WRITER_MODEL` (write with any OpenAI-compatible server, such as Ollama or
+Environment variables: `SE_DB`, `SE_SOURCES`, `SE_BASE_URL` (used in feed
+links), `SE_MODEL` (default `claude-haiku-5-5`), `SE_WRITER_URL` and
+`SE_WRITER_MODEL` (write with any OpenAI-compatible server, such as Ollama or
 llama.cpp, instead of Claude; the URL is the server's base address and the model
-name is published with each story), `BN_LOOKBACK_HOURS`,
-`BN_EMBEDDING_SIMILARITY` (default 0.60) and `BN_WORD_SIMILARITY` (default 0.14; both provisional and requiring broader real-news evaluation), `BN_CLUSTER_WINDOW_HOURS`, `BN_THREAD_SIMILARITY`, `BN_ARCHIVE`,
-`BN_REPO_URL`, `BN_CONTACT_EMAIL` (shown on the About page), `BN_SAMPLE=1` (serve the sample source list).
+name is published with each story), `SE_LOOKBACK_HOURS`,
+`SE_EMBEDDING_SIMILARITY` (default 0.60) and `SE_WORD_SIMILARITY` (default 0.14; both provisional and requiring broader real-news evaluation), `SE_CLUSTER_WINDOW_HOURS`, `SE_THREAD_SIMILARITY`, `SE_ARCHIVE`,
+`SE_REPO_URL`, `SE_CONTACT_EMAIL` (shown on the About page), `SE_SAMPLE=1` (serve the sample source list).
 
 ## Market ticker
 
@@ -337,9 +337,9 @@ which the export writes next to the page.
   read, how they were grouped, every score, the fact-check log, the rubric
   version and hashes of the editorial files. These files are the project's
   storage (committed nightly, published at `/archive/`), and
-  `python -m boringnews.archive restore` rebuilds the database from them.
+  `python -m standardedition.archive restore` rebuilds the database from them.
 - **Developing stories.** A story that continues from the previous edition
-  keeps its thread and shows "Day 2", "Day 3" (`boringnews/threads.py`).
+  keeps its thread and shows "Day 2", "Day 3" (`standardedition/threads.py`).
 - **Corrections.** `corrections.yaml` is published under How it works.
 
 ## Tests

@@ -1,6 +1,6 @@
 """Rebuild the database from the daily edition files (see edition.py).
 
-    python -m boringnews.archive restore            # archive/ -> data/boringnews.db
+    python -m standardedition.archive restore            # archive/ -> data/standardedition.db
 """
 
 from __future__ import annotations
@@ -13,7 +13,7 @@ from .edition import restore
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(prog="boringnews.archive")
+    ap = argparse.ArgumentParser(prog="standardedition.archive")
     sub = ap.add_subparsers(dest="cmd", required=True)
     r = sub.add_parser("restore", help="rebuild the database from archive files")
     r.add_argument("--from", dest="src", default=str(config.ARCHIVE_DIR))

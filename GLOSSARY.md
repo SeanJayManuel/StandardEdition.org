@@ -1,6 +1,6 @@
 # Glossary
 
-**Edition**: one day's stories, sources and market closes (`boringnews/edition.py`). It has three forms: the database row set, the edition file and the page data.
+**Edition**: one day's stories, sources and market closes (`standardedition/edition.py`). It has three forms: the database row set, the edition file and the page data.
 
 **Edition file**: `archive/YYYY-MM-DD.json`, the public record of a run and the project's storage. The database can be rebuilt from these files.
 
@@ -18,4 +18,4 @@
 
 **Record / statement**: a government item with legal or statistical standing, which adds to the score, versus an institution describing its own work, which doesn't.
 
-**Public API**: the versioned files under `api/v1/` on the site (`boringnews/public_api.py`) and the read-only MCP server at `/mcp` that reads them (`functions/mcp.js`). Documented in `docs/api.md`.
+**Public API**: the versioned files under `api/v1/` on the site (`standardedition/public_api.py`) and the read-only MCP server at `/mcp` that reads them (`functions/mcp.js`). Documented in `docs/api.md`.

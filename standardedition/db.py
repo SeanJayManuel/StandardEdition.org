@@ -71,7 +71,7 @@ class Article:
 
     @property
     def key(self) -> str:
-        return self.url if not self.event_id else self.url + "#bn-event-" + self.event_id
+        return self.url if not self.event_id else self.url + "#edition-event-" + self.event_id
 
     @property
     def published(self) -> datetime:

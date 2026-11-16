@@ -1,13 +1,13 @@
 // Reader controls and feed recipes. Selection behavior belongs to core.js.
 (function (root) {
   "use strict";
-  root.BoringSettings = { create: function (ctx) {
+  root.EditionSettings = { create: function (ctx) {
     var D = ctx.D, R = D.rubric, C = ctx.C, getPrefs = ctx.prefs;
     var $ = ctx.$, el = ctx.el, checkbox = ctx.checkbox, toggleIn = ctx.toggleIn;
     var update = ctx.update, updateSoon = ctx.updateSoon;
     var partLabel = ctx.partLabel, weightWords = ctx.weightWords, plural = ctx.plural;
     var THRESHOLD_LABELS = ctx.labels, THRESHOLD_HINTS = ctx.hints;
-    var WEIGHT_PARTS = root.BoringCore.WEIGHT_PARTS;
+    var WEIGHT_PARTS = root.EditionCore.WEIGHT_PARTS;
   function renderControls() {
     var th = $("threshold");
     th.innerHTML = "";

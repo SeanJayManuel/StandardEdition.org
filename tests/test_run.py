@@ -9,14 +9,14 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import pytest
 import yaml
 
-from boringnews import config, ingest, pipeline
-from boringnews.db import connect, editions
-from boringnews.edition import Edition
-from boringnews.ingest import FeedHealth, fetch_all
-from boringnews.inputs import FixtureInputs
-from boringnews.pipeline import check_feeds, main, run, run_blockers
-from boringnews.rewrite import MockWriter
-from boringnews.sources import Source, load_sources
+from standardedition import config, ingest, pipeline
+from standardedition.db import connect, editions
+from standardedition.edition import Edition
+from standardedition.ingest import FeedHealth, fetch_all
+from standardedition.inputs import FixtureInputs
+from standardedition.pipeline import check_feeds, main, run, run_blockers
+from standardedition.rewrite import MockWriter
+from standardedition.sources import Source, load_sources
 
 SOURCES = load_sources(config.FIXTURE_SOURCES_PATH)
 DATE = "2026-11-04"
@@ -96,15 +96,15 @@ def stand_in():
 
 
 def clear_keys(monkeypatch):
-    for key in ("ANTHROPIC_API_KEY", "BN_WRITER_URL", "BN_WRITER_MODEL", "CONGRESS_API_KEY"):
+    for key in ("ANTHROPIC_API_KEY", "SE_WRITER_URL", "SE_WRITER_MODEL", "CONGRESS_API_KEY"):
         monkeypatch.delenv(key, raising=False)
 
 
 def test_a_run_against_a_local_server_names_the_model_and_totals_its_tokens(tmp_path, monkeypatch, stand_in):
     url, calls = stand_in
     clear_keys(monkeypatch)
-    monkeypatch.setenv("BN_WRITER_URL", url)
-    monkeypatch.setenv("BN_WRITER_MODEL", "stand-in")
+    monkeypatch.setenv("SE_WRITER_URL", url)
+    monkeypatch.setenv("SE_WRITER_MODEL", "stand-in")
     archive = tmp_path / "a"
     code = main(["run", "--fixtures", "--date", DATE, "--db", str(tmp_path / "t.db"), "--archive", str(archive)])
     assert code == 0 and calls and {path for path, _ in calls} == {"/v1/chat/completions"}
@@ -118,7 +118,7 @@ def test_a_run_against_a_local_server_names_the_model_and_totals_its_tokens(tmp_
     ({"ANTHROPIC_API_KEY": "", "CONGRESS_API_KEY": "x"}, [], "ANTHROPIC_API_KEY"),  # an unset Actions secret is empty
     ({"ANTHROPIC_API_KEY": "x"}, [], "CONGRESS_API_KEY"),
     ({"ANTHROPIC_API_KEY": "x", "CONGRESS_API_KEY": ""}, [], "CONGRESS_API_KEY"),
-    ({"BN_WRITER_URL": "http://localhost:1", "CONGRESS_API_KEY": "x"}, [], "BN_WRITER_MODEL"),
+    ({"SE_WRITER_URL": "http://localhost:1", "CONGRESS_API_KEY": "x"}, [], "SE_WRITER_MODEL"),
     ({"ANTHROPIC_API_KEY": "x", "CONGRESS_API_KEY": "x"}, ["--mock-llm"], "--mock-llm"),
 ])
 def test_require_writer_stops_before_anything_is_written(tmp_path, monkeypatch, capsys, env, extra, expected):
@@ -134,7 +134,7 @@ def test_require_writer_stops_before_anything_is_written(tmp_path, monkeypatch, 
 
 @pytest.mark.parametrize("env", [
     {"ANTHROPIC_API_KEY": "x", "CONGRESS_API_KEY": "x"},
-    {"BN_WRITER_URL": "http://localhost:1", "BN_WRITER_MODEL": "m", "CONGRESS_API_KEY": "x"},
+    {"SE_WRITER_URL": "http://localhost:1", "SE_WRITER_MODEL": "m", "CONGRESS_API_KEY": "x"},
 ])
 def test_require_writer_passes_with_the_live_keys(monkeypatch, env):
     clear_keys(monkeypatch)

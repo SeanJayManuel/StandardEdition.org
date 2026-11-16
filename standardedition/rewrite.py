@@ -1,7 +1,7 @@
 """Turn a cluster of articles into one calm story.
 
 The writers, chosen in pipeline.pick_writer:
-  1. local (needs BN_WRITER_URL and BN_WRITER_MODEL): any OpenAI-compatible
+  1. local (needs SE_WRITER_URL and SE_WRITER_MODEL): any OpenAI-compatible
      server, such as Ollama or llama.cpp, so a fork needs no paid key
   2. Claude (needs ANTHROPIC_API_KEY)
   3. mock: canned example output from fixtures/rewrites.json (demo only)

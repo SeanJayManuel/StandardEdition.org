@@ -1,11 +1,11 @@
 """Build an edition: ingest -> cluster -> score -> rewrite -> store.
 
 Usage:
-    python -m boringnews.pipeline run                 # live feeds, a model if one is set up
-    python -m boringnews.pipeline run --require-writer  # stop, writing nothing, unless the live keys are set
-    python -m boringnews.pipeline run --fixtures      # demo edition from invented sample data
-    python -m boringnews.pipeline run --fixtures --mock-llm
-    python -m boringnews.pipeline check-feeds         # report which feeds work
+    python -m standardedition.pipeline run                 # live feeds, a model if one is set up
+    python -m standardedition.pipeline run --require-writer  # stop, writing nothing, unless the live keys are set
+    python -m standardedition.pipeline run --fixtures      # demo edition from invented sample data
+    python -m standardedition.pipeline run --fixtures --mock-llm
+    python -m standardedition.pipeline check-feeds         # report which feeds work
 """
 
 from __future__ import annotations
@@ -54,13 +54,13 @@ def match_earlier(earlier: list[Story], groups: list[list]) -> tuple[dict[int, S
 def pick_writer(mock: bool):
     if mock:
         return MockWriter(config.FIXTURE_REWRITES_PATH, config.FIXTURE_ARTICLES_PATH)
-    if os.environ.get("BN_WRITER_URL"):
-        if not os.environ.get("BN_WRITER_MODEL"):  # the name is published with every story
-            raise SystemExit("BN_WRITER_URL is set, so BN_WRITER_MODEL must name the model.")
-        return LocalWriter(os.environ["BN_WRITER_URL"], os.environ["BN_WRITER_MODEL"])
+    if os.environ.get("SE_WRITER_URL"):
+        if not os.environ.get("SE_WRITER_MODEL"):  # the name is published with every story
+            raise SystemExit("SE_WRITER_URL is set, so SE_WRITER_MODEL must name the model.")
+        return LocalWriter(os.environ["SE_WRITER_URL"], os.environ["SE_WRITER_MODEL"])
     if os.environ.get("ANTHROPIC_API_KEY"):
         return ClaudeWriter(config.MODEL)
-    print("No BN_WRITER_URL or ANTHROPIC_API_KEY set: using the no-model fallback writer.")
+    print("No SE_WRITER_URL or ANTHROPIC_API_KEY set: using the no-model fallback writer.")
     return None
 
 
@@ -70,11 +70,11 @@ def run_blockers(mock: bool, fixtures: bool) -> list[str]:
     blockers = []
     if mock:
         blockers.append("--mock-llm is not a real writer")
-    if os.environ.get("BN_WRITER_URL"):
-        if not os.environ.get("BN_WRITER_MODEL"):
-            blockers.append("BN_WRITER_URL is set but BN_WRITER_MODEL is not")
+    if os.environ.get("SE_WRITER_URL"):
+        if not os.environ.get("SE_WRITER_MODEL"):
+            blockers.append("SE_WRITER_URL is set but SE_WRITER_MODEL is not")
     elif not os.environ.get("ANTHROPIC_API_KEY"):
-        blockers.append("set ANTHROPIC_API_KEY or BN_WRITER_URL")
+        blockers.append("set ANTHROPIC_API_KEY or SE_WRITER_URL")
     if not fixtures and not os.environ.get("CONGRESS_API_KEY"):
         blockers.append("CONGRESS_API_KEY is not set")
     return blockers
@@ -218,7 +218,7 @@ def check_feeds(inputs) -> int:
 
 
 def main(argv=None) -> int:
-    p = argparse.ArgumentParser(prog="boringnews.pipeline")
+    p = argparse.ArgumentParser(prog="standardedition.pipeline")
     sub = p.add_subparsers(dest="cmd", required=True)
     r = sub.add_parser("run", help="build an edition")
     r.add_argument("--fixtures", action="store_true", help="use invented sample data instead of live feeds")

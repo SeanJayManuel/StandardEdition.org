@@ -1,7 +1,7 @@
 // Cloudflare Pages Function: a read-only MCP server at /mcp.
 //
 // Stateless Streamable HTTP over POST, with no SDK. It reads the files that
-// `python -m boringnews.export_static` publishes under /api/v1/ and answers with
+// `python -m standardedition.export_static` publishes under /api/v1/ and answers with
 // the same code the page uses (web/core.js). No sessions, and nothing about a
 // request is stored or logged here. docs/api.md is the public description.
 //
@@ -213,15 +213,15 @@ async function getEdition(args, env, origin) {
 
 async function searchCoverage(args, env, origin) {
   const { index, sources } = await researchData(env, origin);
-  const found = globalThis.BoringCore.research.lookup(index, args.query, { limit: args.limit || 5 });
+  const found = globalThis.EditionCore.research.lookup(index, args.query, { limit: args.limit || 5 });
   return {
     how: found.how,
     last_days: SEARCH_DAYS,
     note: found.matches.length ? `${WORD_MATCH} ${RULE}` : `${NO_COVERAGE} ${RULE}`,
     matches: found.matches.map(({ story, strength }) => {
       const ids = story.articles.map((a) => a.source_id);
-      const context = globalThis.BoringCore.research.coverageContext(index, story, sources.sources);
-      const core = globalThis.BoringCore.create({ ...sources, sources: context.sources });
+      const context = globalThis.EditionCore.research.coverageContext(index, story, sources.sources);
+      const core = globalThis.EditionCore.create({ ...sources, sources: context.sources });
       const sc = core.score(ids);
       const names = (ids, map) => ids.map((id) => map[id].name).sort();
       return {
@@ -249,7 +249,7 @@ async function searchCoverage(args, env, origin) {
 
 async function searchRecords(args, env, origin) {
   const { index } = await researchData(env, origin);
-  const records = globalThis.BoringCore.research.searchRecords(index, args);
+  const records = globalThis.EditionCore.research.searchRecords(index, args);
   const limit = args.limit || 20;
   return {
     total: records.length,

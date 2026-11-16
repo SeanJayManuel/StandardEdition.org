@@ -57,5 +57,5 @@ body:
     id: feed-check
     attributes:
       label: Feed check
-      description: Paste this source's line from `python -m boringnews.pipeline check-feeds`, or say you couldn't run it.
+      description: Paste this source's line from `python -m standardedition.pipeline check-feeds`, or say you couldn't run it.
       render: text

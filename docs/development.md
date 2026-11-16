@@ -17,8 +17,8 @@ On Windows activate `.venv\Scripts\activate` instead. `npm run check` prefers th
 ## Preview without keys
 
 ```sh
-python -m boringnews.pipeline run --fixtures --mock-llm --date 2026-11-04
-BN_SAMPLE=1 python -m uvicorn boringnews.web:app --reload
+python -m standardedition.pipeline run --fixtures --mock-llm --date 2026-11-04
+SE_SAMPLE=1 python -m uvicorn standardedition.web:app --reload
 ```
 
 Open `http://localhost:8000`. The fixture edition is invented and must remain labeled as a sample. The first real embedding run can download a model; fixture work does not need it. Preview does not deploy anything.
@@ -26,7 +26,7 @@ Open `http://localhost:8000`. The fixture edition is invented and must remain la
 For the exported artifact:
 
 ```sh
-python -m boringnews.export_static --out site --sample --static-feed
+python -m standardedition.export_static --out site --sample --static-feed
 python -m http.server 8001 --directory site
 ```
 

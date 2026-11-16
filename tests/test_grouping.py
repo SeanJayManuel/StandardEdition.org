@@ -6,9 +6,9 @@ from datetime import datetime, timedelta, timezone
 
 import numpy as np
 
-from boringnews import cluster as grouping
-from boringnews.cluster import WORDS, best_available, cluster, embedded
-from boringnews.db import Article
+from standardedition import cluster as grouping
+from standardedition.cluster import WORDS, best_available, cluster, embedded
+from standardedition.db import Article
 
 START = datetime(2026, 11, 4, 12, tzinfo=timezone.utc)
 FILLER = [Article("f", f"https://x.test/f{i}", f"Filler {i}", "A Plain note about nothing much.", START.isoformat())

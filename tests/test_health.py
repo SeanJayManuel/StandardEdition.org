@@ -2,7 +2,7 @@
 
 import json
 
-from boringnews import config, health
+from standardedition import config, health
 from tests.test_run import workflow
 
 

@@ -23,7 +23,7 @@ Use this after the prelaunch PR passes hosted CI. Passing fixture tests alone is
 
 - **Deploy fails after build:** keep the saved `publication-RUN_ID` artifact; fix the hosting issue and use the redeploy workflow. Do not regenerate the edition just to retry a deploy.
 - **Archive push fails:** recover `archive/` from the same publication artifact, compare it with current `main`, and submit the missing snapshots for review. Preserve the published text and IDs.
-- **Runner/database is lost:** restore from archived edition files with `python -m boringnews.archive restore`; do not rerun historical writing.
+- **Runner/database is lost:** restore from archived edition files with `python -m standardedition.archive restore`; do not rerun historical writing.
 - **An edition is wrong:** publish a documented correction under the governance policy. For a service-breaking release, choose a known-good publication artifact and verify the domain after redeploying it.
 
 The CI recovery rehearsal covers artifact transfer, integrity, database loss, and deterministic re-export. It does not exercise production credentials, archive pushes, CDN behavior, or a live Cloudflare rollback.

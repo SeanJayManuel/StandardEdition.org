@@ -13,7 +13,7 @@ The product publishes a daily edition. Build-time Python work produces static fi
 | Research | Searchable record/story index and historical source context | `research.py`, `web/core.js`, `functions/mcp.js` |
 | Edge | Read published data to serve custom feeds and MCP | `functions/` |
 
-Paths in the table are under `boringnews/` unless qualified. [GLOSSARY.md](../GLOSSARY.md) defines the domain vocabulary.
+Paths in the table are under `standardedition/` unless qualified. [GLOSSARY.md](../GLOSSARY.md) defines the domain vocabulary.
 
 ## Contracts worth preserving
 

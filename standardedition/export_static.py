@@ -1,10 +1,10 @@
 """Export the latest edition as a static site.
 
-    python -m boringnews.export_static --out site
+    python -m standardedition.export_static --out site
 
 Writes index.html (settings work in the browser), edition.json (the data),
 one ready-made feed per topic under feeds/, and the public data under api/v1/
-(boringnews/public_api.py).
+(standardedition/public_api.py).
 
 Custom feed addresses (/feed.xml?topics=...) are built on request by the
 Cloudflare Pages function in functions/feed.xml.js, which reads edition.json.
@@ -127,7 +127,7 @@ def export(edition: Edition, research_index: dict, out: Path, base_url: str, sam
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(prog="boringnews.export_static")
+    ap = argparse.ArgumentParser(prog="standardedition.export_static")
     ap.add_argument("--out", default="site")
     ap.add_argument("--db", default=str(config.DB_PATH))
     ap.add_argument("--sample", action="store_true", help="label the page as sample data")

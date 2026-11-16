@@ -1,16 +1,16 @@
 // The Standard Edition reader page. The rubric and settings it applies are in core.js.
 (function () {
   "use strict";
-  var D = window.BORING_NEWS;
+  var D = window.STANDARD_EDITION;
   var R = D.rubric;
   var PARTS = [
     ["breadth", "Breadth"], ["record", "Government record"], ["coverage", "Coverage"], ["diversity", "Diversity"]
   ];
-  var C = window.BoringCore.create(D);
-  var SPECTRUM = window.BoringCore.SPECTRUM;
-  var WEIGHT_PARTS = window.BoringCore.WEIGHT_PARTS;
+  var C = window.EditionCore.create(D);
+  var SPECTRUM = window.EditionCore.SPECTRUM;
+  var WEIGHT_PARTS = window.EditionCore.WEIGHT_PARTS;
   var DEFAULTS = C.DEFAULTS;
-  var STORE_KEY = "boringnews.prefs.v3";
+  var STORE_KEY = "standardedition.prefs.v3";
   var THRESHOLD_LABELS = { broad: "Broad", standard: "Standard", strict: "Strict" };
   var THRESHOLD_HINTS = {
     broad: "Includes stories that only one side of the spectrum covered.",
@@ -29,8 +29,9 @@
 
   function loadPrefs() {
     var address = new URLSearchParams(location.search), saved = null;
-    try { saved = localStorage.getItem(STORE_KEY); } catch (e) { /* storage unavailable */ }
-    if (window.BoringCore.SETTINGS.some(function (x) { return address.has(x.name); })) {
+    // Settings saved under the site's earlier name are still read.
+    try { saved = localStorage.getItem(STORE_KEY) || localStorage.getItem("boringnews.prefs.v3"); } catch (e) { /* storage unavailable */ }
+    if (window.EditionCore.SETTINGS.some(function (x) { return address.has(x.name); })) {
       var linked = fromQuery(location.search);
       if (saved !== null && toQuery(fromQuery("?" + saved)) !== toQuery(linked)) replaced = saved;
       return linked;
@@ -86,9 +87,9 @@
   function topicOrder() { return Object.keys(D.topics); }
 
   var prefs = loadPrefs();
-  var storyPath = window.BoringCore.storyPath;
+  var storyPath = window.EditionCore.storyPath;
 
-  var evidence = window.BoringEvidence.create(D, el, $, plural);
+  var evidence = window.EditionEvidence.create(D, el, $, plural);
   var provenance = evidence.provenance, claimEvidence = evidence.claims, renderHealth = evidence.health;
 
   function partLabel(k) { return PARTS.filter(function (p) { return p[0] === k; })[0][1]; }
@@ -398,7 +399,7 @@
     if (!res.filtered.length) return;
     var body = el("div", { className: "left-out-body" }, [el("p", { className: "hint",
       text: "Each story your settings hid, and why. Only stories that were written up can be listed: the published rule drops the rest before any setting applies." })]);
-    window.BoringCore.REASONS.forEach(function (r) {
+    window.EditionCore.REASONS.forEach(function (r) {
       var rows = res.filtered.filter(function (x) { return x.reason === r.id; });
       if (!rows.length) return;
       body.appendChild(el("h3", { text: r.label + " (" + rows.length + ")" }));
@@ -696,13 +697,13 @@
   }
 
   // ---------- settings + feed docs
-  var settings = window.BoringSettings.create({ D: D, C: C, prefs: function () { return prefs; },
+  var settings = window.EditionSettings.create({ D: D, C: C, prefs: function () { return prefs; },
     $: $, el: el, checkbox: checkbox, toggleIn: toggleIn, update: update, updateSoon: updateSoon,
     partLabel: partLabel, weightWords: weightWords, plural: plural, labels: THRESHOLD_LABELS, hints: THRESHOLD_HINTS });
   var renderControls = settings.controls, renderDocs = settings.docs, renderSettingsSummary = settings.summary;
 
   // ---------- research tools
-  var RS = window.BoringCore.research;
+  var RS = window.EditionCore.research;
   var researchIndex = D.research || null;
   var researchLoading = null;
 
@@ -754,7 +755,7 @@
     var st = m.story;
     var context = RS.coverageContext(researchIndex, st, D.sources);
     var historicalSources = context.sources;
-    var historicalCore = window.BoringCore.create(Object.assign({}, D, { sources: historicalSources }));
+    var historicalCore = window.EditionCore.create(Object.assign({}, D, { sources: historicalSources }));
     var sc = historicalCore.score(st.articles.map(function (a) { return a.source_id; }));
     var box = el("article", { className: "match" });
     box.appendChild(el("div", { className: "match-head" }, [
@@ -993,11 +994,11 @@
         return;
       }
       if (!stillHere()) return;
-      var context = BoringCore.research.coverageContext(idx, old, D.sources);
+      var context = EditionCore.research.coverageContext(idx, old, D.sources);
       $("story-title").textContent = old.headline;
       $("story-note").textContent = "From the edition of " + longDate(old.date) + ".";
       document.title = old.headline + " | The Standard Edition";
-      body.appendChild(el("p", {}, [el("a", { href: BoringCore.storyPath(old.date, old.id), text: "Read the permanent story page" })]));
+      body.appendChild(el("p", {}, [el("a", { href: EditionCore.storyPath(old.date, old.id), text: "Read the permanent story page" })]));
       body.appendChild(el("p", { className: "hint", text: "Historical sources are shown as recorded for this edition. Today's reader settings do not change this snapshot." }));
       body.appendChild(el("ul", { className: "bullets" }, old.bullets.map(function (text) { return el("li", { text: text }); })));
       body.appendChild(el("h2", { text: "Original sources" }));
@@ -1126,13 +1127,13 @@
 
   // ---------- theme (light by default)
   function setTheme(dark, remember) {
-    document.documentElement.classList.toggle("bn-dark", dark);
+    document.documentElement.classList.toggle("theme-dark", dark);
     var t = $("theme-toggle");
     t.textContent = dark ? "Light" : "Dark";
     t.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
     var desk = getComputedStyle(document.documentElement).getPropertyValue("--desk").trim();
     if (desk) document.querySelector('meta[name="theme-color"]').setAttribute("content", desk);
-    if (remember) { try { localStorage.setItem("boringnews.theme", dark ? "dark" : "light"); } catch (e) {} }
+    if (remember) { try { localStorage.setItem("standardedition.theme", dark ? "dark" : "light"); } catch (e) {} }
   }
 
   // Sliders and typing change settings many times a second, and every view has to
@@ -1167,9 +1168,9 @@
     renderNotices();
   }
 
-  setTheme(document.documentElement.classList.contains("bn-dark"), false);
+  setTheme(document.documentElement.classList.contains("theme-dark"), false);
   $("theme-toggle").addEventListener("click", function () {
-    setTheme(!document.documentElement.classList.contains("bn-dark"), true);
+    setTheme(!document.documentElement.classList.contains("theme-dark"), true);
   });
   var beforeReset = "";
   $("reset").addEventListener("click", function () {

@@ -1,6 +1,6 @@
 # How articles are grouped into stories
 
-This is the plain-language version of [`boringnews/cluster.py`](../boringnews/cluster.py). Any change to grouping must update this file in the same commit.
+This is the plain-language version of [`standardedition/cluster.py`](../standardedition/cluster.py). Any change to grouping must update this file in the same commit.
 
 Different outlets write about the same event with different headlines. Before stories can be scored, articles about the same event have to be grouped together. Grouping matters: if two articles about one event end up apart, each looks like it had narrower coverage than it really did.
 
@@ -19,9 +19,9 @@ The edition still runs, grouped by words (TF-IDF, average linkage, at least 0.14
 
 | Setting | Default | Environment variable |
 | --- | --- | --- |
-| Similarity needed, embeddings | 0.60 | `BN_EMBEDDING_SIMILARITY` |
-| Similarity needed, words | 0.14 | `BN_WORD_SIMILARITY` |
-| Time window | 48 hours | `BN_CLUSTER_WINDOW_HOURS` |
+| Similarity needed, embeddings | 0.60 | `SE_EMBEDDING_SIMILARITY` |
+| Similarity needed, words | 0.14 | `SE_WORD_SIMILARITY` |
+| Time window | 48 hours | `SE_CLUSTER_WINDOW_HOURS` |
 
 **Both similarity settings are provisional.** They come from one unusual day just after the 2026 midterms, and they were chosen on the same day they were tested on. They need a normal news week (roadmap L6).
 

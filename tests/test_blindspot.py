@@ -3,9 +3,9 @@ as the day's reading supports."""
 
 import pytest
 
-from boringnews import config, db, rubric
-from boringnews.edition import Edition, restore
-from boringnews.sources import load_sources
+from standardedition import config, db, rubric
+from standardedition.edition import Edition, restore
+from standardedition.sources import load_sources
 
 from .core import select
 

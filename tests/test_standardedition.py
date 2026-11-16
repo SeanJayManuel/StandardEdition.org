@@ -4,15 +4,15 @@ from datetime import datetime, timezone
 
 import pytest
 
-from boringnews import config, ingest, rubric
-from boringnews.cluster import cluster
-from boringnews.db import connect, load_edition, editions
-from boringnews.edition import Edition
-from boringnews.ingest import load_fixtures
-from boringnews.pipeline import main as pipeline_main
-from boringnews.reader import feeds
-from boringnews.rewrite import fallback, lint, load_banned
-from boringnews.sources import Source, load_sources
+from standardedition import config, ingest, rubric
+from standardedition.cluster import cluster
+from standardedition.db import connect, load_edition, editions
+from standardedition.edition import Edition
+from standardedition.ingest import load_fixtures
+from standardedition.pipeline import main as pipeline_main
+from standardedition.reader import feeds
+from standardedition.rewrite import fallback, lint, load_banned
+from standardedition.sources import Source, load_sources
 
 from .core import select
 
@@ -147,14 +147,14 @@ def test_rss_is_valid_xml(edition_db):
 
 
 def test_feeds_fail_loudly_without_node(monkeypatch):
-    monkeypatch.setattr("boringnews.reader.shutil.which", lambda name: None)
+    monkeypatch.setattr("standardedition.reader.shutil.which", lambda name: None)
     with pytest.raises(RuntimeError, match="needs node"):
         feeds({}, [""])
 
 
 def test_web_routes(tmp_path, monkeypatch):
     from fastapi.testclient import TestClient
-    import boringnews.web as web
+    import standardedition.web as web
 
     db = tmp_path / "t.db"
     pipeline_main(["run", "--fixtures", "--mock-llm", "--date", "2026-11-04", "--db", str(db)])
@@ -178,9 +178,9 @@ def test_web_routes(tmp_path, monkeypatch):
 
 from datetime import datetime, timezone
 
-from boringnews.ingest import congress_items, federal_register_items
-from boringnews.pipeline import cap_official
-from boringnews.db import Article
+from standardedition.ingest import congress_items, federal_register_items
+from standardedition.pipeline import cap_official
+from standardedition.db import Article
 
 SINCE = datetime(2026, 11, 3, tzinfo=timezone.utc)
 
@@ -212,7 +212,7 @@ def test_federal_register_parsing():
 
 
 def test_official_items_are_capped_per_source():
-    from boringnews.sources import Source
+    from standardedition.sources import Source
     srcs = {"gov": Source("gov", "Gov", "", "unrated", "primary", max_items=2),
             "paper": Source("paper", "Paper", "", "center", "national")}
     def art(i, sid="gov"):
@@ -273,7 +273,7 @@ def test_statements_can_be_turned_off(edition_db):
 
 
 def test_official_sources_default_to_statement(tmp_path):
-    from boringnews.sources import load_sources
+    from standardedition.sources import load_sources
     p = tmp_path / "s.yaml"
     p.write_text("sources:\n  - {id: agency, name: Agency, url: x, type: primary}\n")
     assert load_sources(p)["agency"].role == "statement"

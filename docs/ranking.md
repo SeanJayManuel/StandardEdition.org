@@ -1,6 +1,6 @@
 # How stories are chosen
 
-This is the plain-language version of [`boringnews/rubric.py`](../boringnews/rubric.py). If the two ever disagree, the code is what ran, and the mismatch is a bug to report. Any change to the rubric must update this file in the same commit, and any change to the score must bump `VERSION` in the code.
+This is the plain-language version of [`standardedition/rubric.py`](../standardedition/rubric.py). If the two ever disagree, the code is what ran, and the mismatch is a bug to report. Any change to the rubric must update this file in the same commit, and any change to the score must bump `VERSION` in the code.
 
 Current rubric: **v0.4**
 
@@ -62,7 +62,7 @@ A group of articles is left out only when all three of these are true:
 
 1. **More than half of its outlets filed it in a sports section.** A section is a whole part of the link's path: `sport`, `sports`, or `football` (The Guardian's soccer section). Words in the rest of the link don't count, so `/us-news/sports-betting-rises` isn't in a sports section. An outlet counts only if all its articles in the group are in one, and one outlet with many articles still counts once.
 2. **No official source is in the group.** A law, rule or court record is never left out by this rule, and neither is an official item on its own.
-3. **No headline in the group uses a hard-news word.** The words are `HARD_NEWS_WORDS` in [`rubric.py`](../boringnews/rubric.py): law, lawsuit, antitrust, ruling, charged, arrested, senate, governor, voters, bond vote and the like. They can only keep a story, never remove one.
+3. **No headline in the group uses a hard-news word.** The words are `HARD_NEWS_WORDS` in [`rubric.py`](../standardedition/rubric.py): law, lawsuit, antitrust, ruling, charged, arrested, senate, governor, voters, bond vote and the like. They can only keep a story, never remove one.
 
 We read links and not the words in a story because words catch real news. On the first real day checked, a story on US sanctions against Rwanda's army named the NBA, and a story on an Arizona House race named the NFL. Neither is a sports story, and neither is filed as one.
 
@@ -77,7 +77,7 @@ Nothing is hidden. Each edition file in [`archive/`](../archive/) lists every gr
 
 ## What readers can change
 
-Readers can choose the threshold, choose topics, drop any source, hide official items, hide one-sided stories, and set their own weights for the four parts. Dropping a source re-scores every story without it. The page and the RSS feed apply exactly the same rules (`web/core.js`, with the score and lane also in `boringnews/rubric.py` for the pipeline, and tests check they match).
+Readers can choose the threshold, choose topics, drop any source, hide official items, hide one-sided stories, and set their own weights for the four parts. Dropping a source re-scores every story without it. The page and the RSS feed apply exactly the same rules (`web/core.js`, with the score and lane also in `standardedition/rubric.py` for the pipeline, and tests check they match).
 
 A reader's weights (`weights=60,20,10,10`, in the order breadth, coverage, diversity, record) count as shares of their total, so a score still runs from 0 to 1 and the thresholds stay the same. They apply only to that reader's page and feed. The published rule above still decides what gets written, so weights re-rank stories that were written, and can't bring back one it dropped.
 
