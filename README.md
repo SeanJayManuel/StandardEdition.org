@@ -322,10 +322,13 @@ which the export writes next to the page.
   of a single `lean`:
   ```yaml
   - id: example
-    ratings: {ServiceA: lean left, ServiceB: center}   # left, lean left, center, lean right, right
+    ratings:   # label: left, lean left, center, lean right, right
+      ServiceA: {label: lean left, url: https://example.org/ratings/example, checked: 2026-11-15}
+      ServiceB: {label: center, url: https://example.com/example, checked: 2026-11-15}
   ```
-  Its lean becomes their average, and the raters are shown on the site. Fill
-  these in from each service's current published rating.
+  Its lean becomes their average. The site shows each rater, linked to its
+  rating page with the day it was checked. Fill these in from each service's
+  current published rating (see [labeling](docs/labeling.md)).
 - **Fact check.** Every bullet is checked against its sources before
   publishing: numbers must appear in the sources, and with an API key a second
   model call confirms each bullet. Removed bullets are logged with the reason
@@ -353,5 +356,5 @@ The reader itself has no runtime npm dependencies. See the [development guide](d
 
 - Only titles and short summaries from feeds are stored; pages show original
   summaries and link out. Never republish full articles.
-- Lean labels are starting assumptions. Publish them and revisit quarterly.
+- A lean label without a cited rating is a starting assumption. Publish the labels and revisit quarterly.
 - Reuters and AP do not offer public RSS feeds.
