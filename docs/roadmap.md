@@ -14,12 +14,13 @@ Last updated: 2026-11-15.
 
 - **Publish on a schedule.** Turn on the scheduled job so an edition goes out twice a day without anyone running it.
 - **Check real editions by hand.** Read a week of editions against their sources, and tune how articles are grouped into stories.
-- **Cite a rating for every outlet.** Each outlet's left, center or right label should point to a published rating. Today the labels are starting assumptions.
+- **Cite a rating for every outlet.** Each outlet's left, center or right label should point to a published rating. So far 13 of the 25 do. The rest are starting assumptions.
 - **Review feed terms.** Confirm each outlet's terms allow its feed to be read this way.
 
 ## Next
 
 - **More outlets.** Grow from 25 to 100 or more, with regional outlets first.
+- **Keeping ratings current.** Ratings are checked by hand today. Find a way to re-check them on a schedule that the rating services allow.
 - **Outlet ownership.** Show who owns each outlet, and say when two outlets in a story share an owner.
 - **Blind-spot page.** A page and a feed for stories only one side covered.
 - **Installable site.** Add the site to a phone's home screen and read the last edition offline.

@@ -173,7 +173,7 @@ def test_sources_and_research_files(site):
     sources = json.loads((site / "api/v1/sources.json").read_text())
     assert sources["api_version"] == 1 and sources["sample"] is True
     assert sources["rubric"]["weights"] and len(sources["sources"]) == 14
-    assert set(next(iter(sources["sources"].values()))) == {"name", "lean", "type", "role", "weight", "ratings"}
+    assert set(next(iter(sources["sources"].values()))) == {"name", "lean", "type", "role", "weight", "ratings", "rating_sources"}
 
     research = json.loads((site / "api/v1/research.json").read_text())
     page = json.loads((site / "research.json").read_text())

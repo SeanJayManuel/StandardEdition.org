@@ -74,7 +74,7 @@ def _record_coverage(clusters: list[list[Article]], sources: dict) -> dict:
 def sources_from_records(records: dict) -> dict[str, Source]:
     """A historical display snapshot, never used to fetch current feeds."""
     return {sid: Source(id=sid, url="", **{k: v for k, v in item.items()
-            if k in {"name", "lean", "type", "role", "weight", "ratings"}})
+            if k in {"name", "lean", "type", "role", "weight", "ratings", "rating_sources"}})
             for sid, item in records.items()}
 
 

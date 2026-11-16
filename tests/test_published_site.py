@@ -552,3 +552,20 @@ def test_page_is_a_real_document_that_fits_a_phone(site):
     html = (site / "index.html").read_text()
     assert html.lower().startswith("<!doctype html>")
     assert 'name="viewport"' in html.split("<style>")[0]
+
+
+@jsdom
+def test_a_cited_rating_links_to_its_page_and_credits_the_rater(tmp_path, site):
+    sources = edition(site)["sources"]
+    plain = open_page(site, f"{BASE}/")
+    assert plain["errors"] == [] and plain["ratingCredit"] is False
+    assert any("Starting label" in row["text"] for row in plain["sourceRows"])
+
+    sid = next(i for i, s in sources.items() if s["type"] != "primary")
+    sources[sid] = {**sources[sid], "ratings": {"AllSides": "Lean Left"},
+                    "rating_sources": {"AllSides": {"url": "https://example.test/rating", "checked": "2026-11-15"}}}
+    page = open_page(with_data(site, tmp_path, sources=sources), f"{BASE}/")
+    row = next(r for r in page["sourceRows"] if r["links"])
+    assert page["errors"] == [] and page["ratingCredit"] is True
+    assert row["links"] == ["https://example.test/rating"]
+    assert "AllSides: Lean Left (checked Nov 15, 2026)" in row["text"]

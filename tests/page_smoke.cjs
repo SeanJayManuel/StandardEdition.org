@@ -105,6 +105,9 @@ async function main() {
     storyScore: text(document.querySelector("#story-page .score")),
     title: document.title,
     notices: texts("#notices .notice"),
+    sourceRows: [...document.querySelectorAll("#source-table tr")].map((tr) => ({
+      text: tr.textContent, links: [...tr.querySelectorAll("a")].map((a) => a.getAttribute("href")) })),
+    ratingCredit: !document.getElementById("rating-credit").hidden,
     footLinks: document.querySelectorAll(".foot-links a").length,
     socialImage: document.querySelector('meta[property="og:image"]').content,
     contactEmail: byId("contact-email").hidden ? null : text(byId("contact-email")),
